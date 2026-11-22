@@ -1,0 +1,1137 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="description" content="Lernseite zu Computer Based River Modelling (BOKU): Stoff, Rechner, Quiz.">
+<style>:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0}img{max-width:100%}[hidden]{display:none!important}</style>
+<title>CBRM Prüfungstrainer</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600;700&family=IBM+Plex+Sans:ital,wght@0,400;0,500;0,600;1,400&family=JetBrains+Mono:wght@400;500;700&display=swap">
+<style>
+/* Layout: technisches Datenblatt. Millimeterpapier als Grund, jedes Kapitel ein "Blatt" mit Schriftfeld, Rechner als bemaßte Zeichnungsfelder. */
+:root {
+  --bg: #f3f6f9; --surface: #fbfcfd; --ink: #0c2740; --muted: #4e6378; --line: #b9c9d8;
+  --grid-fine: rgba(31, 95, 168, 0.07); --grid-major: rgba(31, 95, 168, 0.15);
+  --accent: #1d5ea6; --accent-soft: #dde9f6; --sed: #c2410c; --sed-soft: #fbe9df;
+  --good: #1f7a3a; --good-soft: #e0f0e4; --bad: #b8322a; --bad-soft: #f9e1de; --code: #e8eef5;
+  --f-display: "Barlow Condensed", "Arial Narrow", "Helvetica Neue", Arial, sans-serif;
+  --f-body: "IBM Plex Sans", "Segoe UI", Roboto, Arial, sans-serif;
+  --f-mono: "JetBrains Mono", "IBM Plex Mono", Consolas, "Courier New", monospace;
+}
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
+  --bg: #0a2240; --surface: #0e2a4d; --ink: #e4eef9; --muted: #9db6d0; --line: #2c4d75;
+  --grid-fine: rgba(160, 205, 255, 0.06); --grid-major: rgba(160, 205, 255, 0.13);
+  --accent: #7cc4ff; --accent-soft: #173d66; --sed: #ffad5c; --sed-soft: #3d2c1c;
+  --good: #73d38a; --good-soft: #163a26; --bad: #ff8a80; --bad-soft: #3e2025; --code: #12345c; color-scheme: dark } }
+:root[data-theme="dark"] {
+  --bg: #0a2240; --surface: #0e2a4d; --ink: #e4eef9; --muted: #9db6d0; --line: #2c4d75;
+  --grid-fine: rgba(160, 205, 255, 0.06); --grid-major: rgba(160, 205, 255, 0.13);
+  --accent: #7cc4ff; --accent-soft: #173d66; --sed: #ffad5c; --sed-soft: #3d2c1c;
+  --good: #73d38a; --good-soft: #163a26; --bad: #ff8a80; --bad-soft: #3e2025; --code: #12345c; color-scheme: dark }
+
+* { box-sizing: border-box; }
+html { scroll-behavior: smooth; scroll-padding-top: calc(64px + env(safe-area-inset-top, 0px)); }
+@media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } }
+body {
+  background-color: var(--bg); color: var(--ink); font-family: var(--f-body); font-size: 16px; line-height: 1.6;
+  background-image:
+    linear-gradient(var(--grid-major) 1px, transparent 1px), linear-gradient(90deg, var(--grid-major) 1px, transparent 1px),
+    linear-gradient(var(--grid-fine) 1px, transparent 1px), linear-gradient(90deg, var(--grid-fine) 1px, transparent 1px);
+  background-size: 50px 50px, 50px 50px, 10px 10px, 10px 10px;
+}
+body::before { content: ""; position: fixed; inset: 0 0 auto; height: env(safe-area-inset-top, 0px); z-index: 10; background: var(--ink); }
+h1, h2, h3, h4 { font-family: var(--f-display); line-height: 1.15; text-wrap: balance; margin: 0; letter-spacing: 0.01em; }
+h2 { font-size: 2rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.02em; }
+h3 { font-size: 1.35rem; font-weight: 600; margin-top: 8px; text-transform: uppercase; letter-spacing: 0.03em; display: flex; align-items: baseline; gap: 10px; }
+h3::before { content: ""; flex: none; width: 14px; height: 2px; background: var(--sed); transform: translateY(-5px); }
+h4 { font-size: 1.12rem; font-weight: 600; letter-spacing: 0.02em; }
+p { margin: 0; }
+a { color: var(--accent); }
+:focus-visible { outline: 2px solid var(--sed); outline-offset: 2px; }
+sub, sup { font-size: 0.72em; }
+
+.nav { position: sticky; top: env(safe-area-inset-top, 0px); z-index: 20; background: var(--ink); color: var(--bg);
+  padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); }
+.nav-inner { max-width: 1060px; margin: 0 auto; display: flex; gap: 2px; overflow-x: auto; padding-block: 8px; scrollbar-width: thin; }
+.nav a { flex: none; text-decoration: none; color: var(--bg); opacity: 0.78; font-family: var(--f-mono); font-size: 0.78rem; letter-spacing: 0.04em; text-transform: uppercase; padding: 6px 10px; border: 1px solid transparent; white-space: nowrap; }
+.nav a:hover { opacity: 1; border-color: var(--bg); }
+.nav a.quiz-link { opacity: 1; color: var(--surface); background: var(--sed); }
+
+.wrap { max-width: 1060px; margin: 0 auto; padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); padding-block: 36px 72px; display: grid; gap: 64px; }
+
+.hero { display: grid; gap: 22px; }
+.eyebrow { font-family: var(--f-mono); font-size: 0.74rem; letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted); border-bottom: 1px solid var(--line); padding-bottom: 8px; }
+.hero h1 { font-size: clamp(2.3rem, 6vw, 4rem); font-weight: 700; text-transform: uppercase; letter-spacing: 0.005em; line-height: 1.02; }
+.hero h1 span { color: var(--sed); }
+.lead { max-width: 65ch; color: var(--muted); font-size: 1.05rem; }
+.facts { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 0; border: 1.5px solid var(--ink); background: var(--surface); }
+.fact { padding: 14px 16px; display: grid; gap: 4px; border-right: 1px solid var(--line); }
+.fact:last-child { border-right: 0; }
+.fact b { font-family: var(--f-mono); font-size: 0.74rem; text-transform: uppercase; letter-spacing: 0.1em; color: var(--accent); }
+.fact span { color: var(--ink); font-size: 0.92rem; }
+
+section.ch { display: grid; gap: 22px; }
+.ch-head { display: grid; grid-template-columns: auto minmax(0, 1fr); border: 1.5px solid var(--ink); background: var(--surface); }
+.ch-head .unit { grid-column: 1 / -1; font-family: var(--f-mono); font-size: 0.72rem; letter-spacing: 0.1em; color: var(--bg); background: var(--ink); padding: 5px 12px; text-transform: uppercase; }
+.ch-head h2 { padding: 10px 14px 8px; }
+.prose { max-width: 70ch; display: grid; gap: 10px; }
+ul.pts { margin: 0; padding-left: 1.2em; display: grid; gap: 6px; max-width: 72ch; list-style: square; }
+ul.pts li::marker { color: var(--sed); }
+ol.steps { margin: 0; padding-left: 1.6em; display: grid; gap: 6px; max-width: 72ch; }
+ol.steps li::marker { font-family: var(--f-mono); color: var(--accent); font-weight: 700; }
+.src { font-family: var(--f-mono); font-size: 0.7rem; color: var(--muted); white-space: nowrap; letter-spacing: 0.02em; }
+.src::before { content: "↳ "; color: var(--accent); }
+.star { color: var(--sed); font-size: 0.8rem; letter-spacing: 1px; }
+
+.cols { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 16px; }
+.cols > * { min-width: 0; }
+.box { background: var(--surface); border: 1px solid var(--line); border-top: 3px solid var(--accent); padding: 14px 16px; display: grid; gap: 8px; align-content: start; }
+.box.merke { background: var(--sed-soft); border: 1.5px dashed var(--sed); }
+.box.merke h4 { color: var(--sed); text-transform: uppercase; }
+.box.merke h4::before { content: "!  "; font-family: var(--f-mono); }
+.tag { font-family: var(--f-mono); font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.1em; color: var(--accent); }
+
+.f { font-family: var(--f-mono); font-size: 0.9rem; background: var(--code); border-left: 3px solid var(--accent); padding: 9px 12px; overflow-x: auto; white-space: nowrap; }
+.f.block { display: block; }
+code, .m { font-family: var(--f-mono); font-size: 0.86em; }
+
+.tbl { overflow-x: auto; border: 1.5px solid var(--ink); background: var(--surface); }
+table { border-collapse: collapse; width: 100%; font-size: 0.92rem; }
+th, td { text-align: left; padding: 8px 12px; border-bottom: 1px solid var(--line); border-right: 1px solid var(--line); vertical-align: top; }
+th:last-child, td:last-child { border-right: 0; }
+th { font-family: var(--f-mono); font-weight: 500; font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.08em; background: var(--ink); color: var(--bg); border-right-color: var(--muted); }
+tr:last-child td { border-bottom: 0; }
+td.num { font-variant-numeric: tabular-nums; font-family: var(--f-mono); }
+.plus { color: var(--good); font-weight: 700; font-family: var(--f-mono); }
+.minus { color: var(--bad); font-weight: 700; font-family: var(--f-mono); }
+
+/* Rechner = Zeichnungsfelder */
+.lab { background: var(--surface); border: 1.5px solid var(--ink); outline: 1px solid var(--line); outline-offset: 4px; display: grid; gap: 0; overflow: hidden; margin: 4px; }
+.lab-head { padding: 10px 14px; border-bottom: 1.5px solid var(--ink); display: flex; flex-wrap: wrap; gap: 6px 14px; align-items: baseline; justify-content: space-between; }
+.lab-head h4 { color: var(--ink); text-transform: uppercase; }
+.lab-head h4::before { content: "▣ "; color: var(--sed); font-size: 0.85em; }
+.lab-body { display: grid; grid-template-columns: minmax(0, 1fr) minmax(220px, 300px); gap: 0; }
+@media (max-width: 760px) { .lab-body { grid-template-columns: minmax(0, 1fr); } }
+.lab-plot { padding: 12px; min-width: 0; }
+.lab-plot svg { width: 100%; height: auto; display: block; }
+.lab-ctl { padding: 14px 16px; border-left: 1.5px solid var(--ink); display: grid; gap: 12px; align-content: start; background: var(--code); }
+@media (max-width: 760px) { .lab-ctl { border-left: 0; border-top: 1.5px solid var(--ink); } }
+.ctl { display: grid; gap: 4px; }
+.ctl label { font-family: var(--f-mono); font-size: 0.74rem; text-transform: uppercase; letter-spacing: 0.04em; color: var(--muted); display: flex; justify-content: space-between; gap: 8px; }
+.ctl label output { color: var(--sed); font-family: var(--f-mono); font-weight: 700; text-transform: none; font-variant-numeric: tabular-nums; }
+input[type=range] { width: 100%; accent-color: var(--sed); }
+input[type=number] { width: 100%; font: inherit; font-family: var(--f-mono); padding: 6px 8px; border: 1px solid var(--ink); border-radius: 0; background: var(--surface); color: var(--ink); }
+.out { display: grid; gap: 4px; font-size: 0.88rem; }
+.out div { display: flex; justify-content: space-between; gap: 10px; border-bottom: 1px dotted var(--muted); padding-bottom: 3px; }
+.out b { font-family: var(--f-mono); font-weight: 700; font-variant-numeric: tabular-nums; }
+.pill { display: inline-block; font-family: var(--f-mono); font-size: 0.72rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em; padding: 1px 8px; border: 1.5px solid currentColor; }
+.pill.ok { background: var(--good-soft); color: var(--good); }
+.pill.no { background: var(--bad-soft); color: var(--bad); }
+.pill.info { background: var(--accent-soft); color: var(--accent); }
+.note { font-size: 0.8rem; color: var(--muted); }
+
+.seg { display: flex; flex-wrap: wrap; gap: 6px; }
+.seg button, .chip { font-family: var(--f-mono); font-size: 0.74rem; text-transform: uppercase; letter-spacing: 0.04em; padding: 6px 10px; border: 1px solid var(--ink); background: var(--surface); color: var(--ink); border-radius: 0; cursor: pointer; }
+.seg button[aria-pressed=true], .chip[aria-pressed=true] { background: var(--ink); color: var(--bg); }
+.btn { font-family: var(--f-mono); font-weight: 700; font-size: 0.76rem; text-transform: uppercase; letter-spacing: 0.06em; padding: 8px 12px; border-radius: 0; border: 1.5px solid var(--sed); background: var(--sed); color: var(--surface); cursor: pointer; }
+.btn.ghost { background: transparent; color: var(--sed); }
+.btn.ghost[aria-pressed=true] { background: var(--sed-soft); }
+
+.terms { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; font-family: var(--f-mono); font-size: 1rem; padding: 14px; }
+.term { padding: 6px 10px; border: 1px dashed var(--line); transition: opacity .2s; }
+.term.on { background: var(--accent-soft); border: 1.5px solid var(--accent); color: var(--ink); }
+.term.off { opacity: 0.35; text-decoration: line-through; }
+
+/* SVG */
+svg text { font-family: var(--f-body); fill: var(--ink); }
+svg .tick { font-size: 11px; fill: var(--muted); font-family: var(--f-mono); }
+svg .lbl { font-size: 12px; fill: var(--muted); font-family: var(--f-mono); }
+svg .lbl-s { font-size: 11px; fill: var(--ink); font-family: var(--f-mono); }
+svg .grid { stroke: var(--line); stroke-width: 0.8; fill: none; stroke-dasharray: 2 3; }
+svg .axis { stroke: var(--ink); stroke-width: 1.2; fill: none; }
+svg .ref { stroke: var(--muted); stroke-dasharray: 6 3 1 3; stroke-width: 1; fill: none; }
+svg .curve { stroke: var(--accent); stroke-width: 2.5; fill: none; }
+svg .curve2 { stroke: var(--sed); stroke-width: 2.5; fill: none; }
+svg .dash { stroke: var(--sed); stroke-dasharray: 6 3 1 3; stroke-width: 1.5; fill: none; }
+svg .dot { fill: var(--accent); stroke: var(--surface); stroke-width: 2; }
+svg .dot2 { fill: var(--sed); stroke: var(--surface); stroke-width: 2; }
+svg .ground { fill: var(--sed-soft); stroke: var(--sed); stroke-width: 1.5; }
+svg .water { fill: var(--accent-soft); stroke: none; }
+svg .wline { stroke: var(--accent); stroke-width: 2; fill: none; }
+svg .eline { stroke: var(--bad); stroke-width: 1.8; fill: none; }
+svg .ink { stroke: var(--ink); stroke-width: 1.2; fill: none; }
+svg .solid { fill: var(--ink); }
+svg .hatch-line { stroke: var(--accent); stroke-width: 1; }
+svg .mesh { stroke: var(--accent); stroke-width: 1; fill: none; }
+svg .mesh2 { stroke: var(--sed); stroke-width: 1; fill: none; }
+svg .frame { fill: var(--accent-soft); stroke: none; }
+
+/* Quiz */
+.quiz-bar { display: flex; flex-wrap: wrap; gap: 10px 16px; align-items: center; justify-content: space-between; background: var(--surface); border: 1.5px solid var(--ink); padding: 12px 14px; }
+.score { font-family: var(--f-mono); font-variant-numeric: tabular-nums; font-size: 0.85rem; }
+.score b { color: var(--sed); font-size: 1.1rem; }
+.meter { height: 10px; border: 1px solid var(--ink); min-width: 140px; flex: 1; max-width: 260px; background: repeating-linear-gradient(90deg, transparent 0 9px, var(--line) 9px 10px); }
+.meter i { display: block; height: 100%; background: var(--sed); width: 0; transition: width .3s; }
+.qlist { display: grid; gap: 14px; }
+.q { background: var(--surface); border: 1px solid var(--line); border-left: 5px solid var(--line); padding: 14px 16px; display: grid; gap: 10px; }
+.q.right { border-left-color: var(--good); }
+.q.wrong { border-left-color: var(--bad); }
+.q-top { display: flex; justify-content: space-between; gap: 10px; align-items: baseline; flex-wrap: wrap; }
+.q-q { font-weight: 600; }
+.opts { display: grid; gap: 6px; }
+.opt { font: inherit; text-align: left; padding: 8px 12px; border: 1px solid var(--line); border-radius: 0; background: var(--bg); color: var(--ink); cursor: pointer; }
+.opt:hover:not([disabled]) { border-color: var(--ink); }
+.opt[disabled] { cursor: default; }
+.opt.is-right { background: var(--good-soft); border: 1.5px solid var(--good); }
+.opt.is-wrong { background: var(--bad-soft); border: 1.5px solid var(--bad); }
+.expl { font-size: 0.9rem; background: var(--code); border-left: 3px solid var(--accent); padding: 10px 12px; }
+.empty { color: var(--muted); padding: 20px; text-align: center; font-family: var(--f-mono); }
+footer { color: var(--muted); font-family: var(--f-mono); font-size: 0.74rem; border-top: 1.5px solid var(--ink); padding-top: 14px; }
+</style>
+</head>
+<body>
+
+
+<nav class="nav" aria-label="Kapitel">
+  <div class="nav-inner">
+    <a href="#start">Start</a>
+    <a href="#hydraulik">1.2 Hydraulik</a>
+    <a href="#eindim">1.3 1D</a>
+    <a href="#numerik">2.1 Numerik</a>
+    <a href="#rauheit">2.2 Rauheit</a>
+    <a href="#mehrdim">3 2D/3D</a>
+    <a href="#sediment">4 Sediment</a>
+    <a href="#uebungen">Übungen</a>
+    <a href="#formeln">Formelblatt</a>
+    <a href="#quiz" class="quiz-link">Quiz</a>
+  </div>
+</nav>
+
+<main class="wrap">
+
+<!-- ============ START ============ -->
+<header class="hero" id="start">
+  <div class="eyebrow">BOKU · VU LAWI301273/301284 · Computer Based River Modelling</div>
+  <h1>Datenblatt Flussmodellierung: <span>von Saint-Venant bis zur Sohlschwelle</span></h1>
+  <p class="lead">Der gesamte Stoff aus den neun englischen Foliensätzen und den Übungen (HEC-RAS PU 1–5, RSim-2D, RSim-3D), mit Rechnern zum Ausprobieren und einem Quiz am Ende. Fachbegriffe stehen auch auf Englisch, weil die Unterlagen englisch sind.</p>
+  <div class="facts">
+    <div class="fact"><b>Prüfung</b><span>Schriftlich, Fragen aus Vorlesung <em>und</em> Übungen. Termine Dezember, Jänner, drei im Sommersemester. <span class="src">1.1 · S. 9</span></span></div>
+    <div class="fact"><b>Schwerpunkt</b><span>Die Numerik (2.1) ist der größte Block. Rechnen solltest du können: CFL-Kriterium, Strickler aus d<sub>90</sub>, Froude-Zahl und Shields.</span></div>
+    <div class="fact"><b>Legende</b><span><span class="star">★★★</span> sehr wahrscheinlich prüfungsrelevant. Diese Gewichtung ist eine Einschätzung, keine Angabe des Vortragenden.</span></div>
+  </div>
+
+  <div class="cols">
+    <div class="box"><span class="tag">1D</span><h4>Gerinne und Netze</h4><p>Einfache, vorwiegend gerade Gerinne mit kaum veränderlichem Querschnitt; Prozesse im Querschnitt sind nicht von Interesse. Auch Rohrnetze.</p><span class="src">1.1 · S. 13</span></div>
+    <div class="box"><span class="tag">2D</span><h4>Fläche und Vorland</h4><p>Komplexe Gewässer mit horizontalem Austausch; Überflutung von Vorländern (Hochwasserstudien).</p><span class="src">1.1 · S. 13</span></div>
+    <div class="box"><span class="tag">3D</span><h4>Vertikal und Bauwerke</h4><p>Wenn vertikale Geschwindigkeiten zählen: Sekundärströmung in Krümmungen, Grundablass bei Spülung, Umströmung von Brückenpfeilern und Einbauten.</p><span class="src">1.1 · S. 14</span></div>
+  </div>
+  <div class="cols">
+    <div class="box"><h4>Warum numerisch modellieren?</h4><p>Parameterstudien zu geplanten Maßnahmen (Bauwerke, Rauheit). Änderungen an physikalischen Modellen sind aufwendig und teuer. <span class="src">1.1 · S. 11</span></p></div>
+    <div class="box"><h4>Was wird simuliert?</h4><p>Strömung: Geschwindigkeit (Betrag, Richtung), Druck (3D), k und ε, Wasserspiegel, Sohlschubspannung. Sediment: Schwebstoffkonzentration, Geschiebefracht, Sohlveränderung. <span class="src">1.1 · S. 12</span></p></div>
+  </div>
+</header>
+
+<!-- ============ 1.2 HYDRAULIK ============ -->
+<section class="ch" id="hydraulik">
+  <div class="ch-head"><span class="unit">UNIT 1.2 · FUNDAMENTALS IN HYDRAULICS</span><h2>Hydraulische Grundlagen</h2></div>
+
+  <div class="cols">
+    <div class="box"><h4>Euler vs. Lagrange <span class="star">★★</span></h4>
+      <p><b>Euler:</b> Größen als Funktion von Ort und Zeit, v<sub>x</sub> = F(x, y, z, t). Feste Beobachtungspunkte.</p>
+      <p><b>Lagrange:</b> Beobachter bewegt sich mit dem Teilchen, x = F(a, b, c, t).</p><span class="src">1.2 · S. 4</span></div>
+    <div class="box"><h4>Linienbegriffe <span class="star">★★</span></h4>
+      <p><b>Stromlinie:</b> Tangente zeigt die Geschwindigkeitsrichtung zu einem Zeitpunkt. <b>Stromröhre:</b> aus Stromlinien, nichts tritt durch die Wand. <b>Bahnlinie:</b> tatsächlicher Weg eines Teilchens. <b>Streichlinie:</b> alle Teilchen, die einen Punkt passiert haben.</p>
+      <p>Bei <b>stationärer</b> Strömung sind alle identisch.</p><span class="src">1.2 · S. 7–8</span></div>
+  </div>
+
+  <h3>Beschleunigung: stationär und gleichförmig <span class="star">★★★</span></h3>
+  <div class="tbl"><table>
+    <tr><th>Term</th><th>Name</th><th>= 0</th><th>≠ 0</th></tr>
+    <tr><td class="m">∂v/∂t</td><td>lokale Beschleunigung</td><td>stationär (<em>steady</em>)</td><td>instationär (<em>unsteady</em>)</td></tr>
+    <tr><td class="m">(v·∇)v</td><td>konvektive Beschleunigung</td><td>gleichförmig (<em>uniform</em>)</td><td>ungleichförmig (<em>non-uniform</em>)</td></tr>
+  </table></div>
+  <p class="src">1.2 · S. 5–6</p>
+
+  <h3>Navier-Stokes und die drei Grundgesetze <span class="star">★★★</span></h3>
+  <div class="cols">
+    <div class="box"><p><b>Euler-Bewegungsgleichung:</b> inkompressibel und reibungsfrei, nur Druck- und Massenkräfte.</p>
+      <p><b>Navier-Stokes:</b> laminar und turbulent gültig, zusätzlich viskose Spannungen (ν) und turbulente Schwankungen v′.</p>
+      <p>Terme: Trägheit = Massenkraft + Druckkraft + Viskosität + scheinbare turbulente Reibung.</p><span class="src">1.2 · S. 9</span></div>
+    <div class="box"><p>1. <b>Massenerhaltung</b> (Kontinuität): ∂v<sub>x</sub>/∂x + ∂v<sub>y</sub>/∂y + ∂v<sub>z</sub>/∂z = 0, bzw. Q = v<sub>m1</sub>A<sub>1</sub> = v<sub>m2</sub>A<sub>2</sub></p>
+      <p>2. <b>Energieprinzip</b> (Bernoulli)</p>
+      <p>3. <b>Impulsprinzip</b> (Stützkraftsatz): ΣR = ρQ(v<sub>2</sub> − v<sub>1</sub>), F<sub>s</sub> = pA + ρQv</p><span class="src">1.2 · S. 10, 14</span></div>
+  </div>
+
+  <div class="lab">
+    <div class="lab-head"><h4>Bernoulli mit Verlusten</h4><span class="src">1.2 · S. 11–12</span></div>
+    <div class="lab-plot" style="padding:16px">
+      <svg viewBox="0 0 620 270" role="img" aria-label="Energielinie, Wasserspiegel und Sohle zwischen zwei Querschnitten">
+        <line class="axis" x1="30" y1="240" x2="590" y2="240"/><text class="lbl" x="34" y="258">Bezugsniveau z = 0</text>
+        <polygon class="water" points="40,110 580,150 580,212 40,190"/>
+        <polygon class="ground" points="40,190 580,212 580,240 40,240"/>
+        <line class="ref" x1="40" y1="60" x2="580" y2="60"/><text class="lbl" x="452" y="54">H<tspan baseline-shift="sub" font-size="9">0</tspan> = const</text>
+        <line class="eline" x1="40" y1="70" x2="580" y2="100"/><text class="lbl-s" x="458" y="84" style="fill:var(--bad)">Energielinie, Neigung I<tspan baseline-shift="sub" font-size="9">E</tspan></text>
+        <line class="wline" x1="40" y1="110" x2="580" y2="150"/><text class="lbl-s" x="296" y="122" style="fill:var(--accent)">Wasserspiegel</text>
+        <g>
+          <line class="ink" x1="120" y1="240" x2="120" y2="193"/><line class="ink" x1="114" y1="193" x2="126" y2="193"/><text class="lbl-s" x="128" y="222">z<tspan baseline-shift="sub" font-size="9">1</tspan></text>
+          <line class="ink" x1="120" y1="193" x2="120" y2="116"/><line class="ink" x1="114" y1="116" x2="126" y2="116"/><text class="lbl-s" x="128" y="160">h<tspan baseline-shift="sub" font-size="9">1</tspan> = p<tspan baseline-shift="sub" font-size="9">1</tspan>/ρg</text>
+          <line class="ink" x1="120" y1="116" x2="120" y2="74"/><line class="ink" x1="114" y1="74" x2="126" y2="74"/><text class="lbl-s" x="128" y="100">v<tspan baseline-shift="sub" font-size="9">1</tspan>²/2g</text>
+          <line class="ink" x1="480" y1="240" x2="480" y2="207"/><text class="lbl-s" x="488" y="230">z<tspan baseline-shift="sub" font-size="9">2</tspan></text>
+          <line class="ink" x1="480" y1="207" x2="480" y2="144"/><text class="lbl-s" x="488" y="180">h<tspan baseline-shift="sub" font-size="9">2</tspan></text>
+          <line class="ink" x1="480" y1="144" x2="480" y2="95"/><text class="lbl-s" x="488" y="126">v<tspan baseline-shift="sub" font-size="9">2</tspan>²/2g</text>
+          <line class="ink" x1="540" y1="95" x2="540" y2="60" style="stroke:var(--bad)"/><text class="lbl-s" x="546" y="80" style="fill:var(--bad)">h<tspan baseline-shift="sub" font-size="9">v</tspan></text>
+          <text class="lbl" x="100" y="40">Querschnitt 1</text><text class="lbl" x="440" y="40">Querschnitt 2</text>
+        </g>
+      </svg>
+      <p class="f" style="margin-top:8px">z + p/ρg + v²/2g + h<sub>v</sub> = H<sub>0</sub> = const &nbsp;&nbsp; I<sub>E</sub> = −dH/dx = dh<sub>v</sub>/dx &nbsp;&nbsp; h<sub>v</sub> = ξ·v²/2g</p>
+    </div>
+  </div>
+
+  <h3>De-Saint-Venant-Gleichungen <span class="star">★★★</span></h3>
+  <div class="cols">
+    <div class="box"><span class="tag">Gleichungen</span>
+      <p class="f">∂Q/∂x + ∂A/∂t = 0</p>
+      <p class="f">∂v/∂t + v·∂v/∂x + g(∂h/∂x − I<sub>s</sub>) + g·I<sub>E</sub> = 0</p>
+      <p class="note">Beschleunigung, Trägheit, Schwerkraft, Reibung. Beschreiben instationäre Gerinneströmung.</p><span class="src">1.2 · S. 13</span></div>
+    <div class="box merke"><h4>Die 4 Voraussetzungen</h4>
+      <ul class="pts"><li>inkompressibles Medium</li><li>hydrostatische Druckverteilung in jeder Lotrechten (Stromfadenkrümmung vernachlässigbar)</li><li>Geschwindigkeit über den Querschnitt konstant</li><li>kleines Wasserspiegelgefälle</li></ul></div>
+  </div>
+
+  <div class="cols">
+    <div class="box"><h4>Korrekturbeiwerte α und β <span class="star">★★</span></h4>
+      <p class="f">α = ∫v³dA / (v̄³A) &nbsp;&nbsp; β = ∫v²dA / (v̄²A) &nbsp;&nbsp; α ≈ 3β − 2</p>
+      <p>Offenes Gerinne: α = 1,03–1,15 (Energie), β = 1,01–1,05 (Impuls). Bei schießendem Abfluss kleiner als bei strömendem. α reagiert viel empfindlicher, weil v in dritter Potenz eingeht.</p><span class="src">1.2 · S. 16–17</span></div>
+    <div class="box"><h4>Borda-Carnot (Mischungsverlust) <span class="star">★★</span></h4>
+      <p class="f">h<sub>v</sub> = ξ·v<sub>2</sub>²/2g, &nbsp; ξ = c·(1 − A<sub>2</sub>/A<sub>1</sub>)²</p>
+      <p>c = 1,0–1,2 bei plötzlicher Erweiterung, c = 0,4–0,5 bei plötzlicher Verengung. Hergeleitet aus Impulssatz, Kontinuität und Bernoulli.</p><span class="src">1.2 · S. 15</span></div>
+    <div class="box"><h4>Turbulenz <span class="star">★★</span></h4>
+      <p class="f">v(t) = v̄ + v′(t) &nbsp;&nbsp; Re = v<sub>m</sub>R/ν</p>
+      <p>Re<sub>krit</sub> ≈ 600 (mit R; ≈ 2000 mit Durchmesser). Konzepte: Boussinesq, Reynolds, Prandtl, von Kármán.</p><span class="src">1.2 · S. 18</span></div>
+  </div>
+
+  <h3>Fließformeln <span class="star">★★★</span></h3>
+  <p class="prose">Gelten für stationären, gleichförmigen Abfluss: Sohl-, Wasserspiegel- und Energiegefälle sind gleich, Schwerkraft = Reibung. <span class="src">1.2 · S. 19–20</span></p>
+  <div class="tbl"><table>
+    <tr><th>Formel</th><th>Ausdruck</th><th>Bemerkung</th></tr>
+    <tr><td>Brahms-de Chézy</td><td class="m">v = C·√(R·I)</td><td></td></tr>
+    <tr><td>Gauckler-Manning-Strickler</td><td class="m">v = k<sub>St</sub>·R<sup>2/3</sup>·I<sup>1/2</sup></td><td>Q = k<sub>St</sub>AR<sup>2/3</sup>I<sub>e</sub><sup>1/2</sup> = K·√I<sub>e</sub>; n = 1/k<sub>St</sub></td></tr>
+    <tr><td>Universell, hydraulisch rau</td><td class="m">v = 5,75·v*·log(12h/k<sub>s</sub>)</td><td>aus Darcy-Weisbach + Colebrook-White</td></tr>
+  </table></div>
+
+  <div class="lab" id="lab-energy">
+    <div class="lab-head"><h4>Rechner: spezifische Energie und Froude-Zahl (Rechteckgerinne)</h4><span class="src">1.2 · S. 21</span></div>
+    <div class="lab-body">
+      <div class="lab-plot"><svg id="se-svg" viewBox="0 0 540 360" role="img" aria-label="Kurve der spezifischen Energie"></svg></div>
+      <div class="lab-ctl">
+        <div class="ctl"><label for="se-q">Abfluss je Meter Breite q <output id="se-q-o"></output></label><input id="se-q" type="range" min="0.5" max="15" step="0.5" value="6"></div>
+        <div class="ctl"><label for="se-h">Wassertiefe h <output id="se-h-o"></output></label><input id="se-h" type="range" min="0.2" max="6" step="0.05" value="2.5"></div>
+        <div class="out" id="se-out"></div>
+        <p class="note">H<sub>E</sub> = h + q²/(2gh²). Am Minimum ist dH<sub>E</sub>/dh = 0 und damit Fr = 1 (Grenzzustand). Für das Rechteck gilt h<sub>gr</sub> = (q²/g)<sup>1/3</sup> und H<sub>E,min</sub> = 1,5·h<sub>gr</sub>.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 1.3 1D ============ -->
+<section class="ch" id="eindim">
+  <div class="ch-head"><span class="unit">UNIT 1.3 · 1-D SURFACE WATER MODELLING</span><h2>1D-Modellierung</h2></div>
+
+  <div class="lab" id="lab-waves">
+    <div class="lab-head"><h4>Wellentypen: welche Terme bleiben stehen? <span class="star">★★★</span></h4><span class="src">1.3 · S. 4–6</span></div>
+    <div style="padding:14px 16px 0" class="seg" role="group" aria-label="Wellentyp">
+      <button type="button" data-w="kin" aria-pressed="false">Kinematische Welle</button>
+      <button type="button" data-w="diff" aria-pressed="false">Diffusionswelle</button>
+      <button type="button" data-w="qs" aria-pressed="false">Quasi-stationär dynamisch</button>
+      <button type="button" data-w="dyn" aria-pressed="true">Dynamische Welle</button>
+    </div>
+    <div class="terms" aria-live="polite">
+      <span>I<sub>e</sub> =</span><span class="term" data-t="0">I<sub>s</sub></span><span>−</span><span class="term" data-t="1">∂h/∂x</span><span>−</span><span class="term" data-t="2">(v/g)·∂v/∂x</span><span>−</span><span class="term" data-t="3">(1/g)·∂v/∂t</span>
+    </div>
+    <p id="wave-text" style="padding:0 16px 16px;max-width:75ch"></p>
+  </div>
+  <div class="box merke"><h4>Schwerewelle</h4><p>Reibung wird vernachlässigt. Deshalb laufen Wellen und Störungen ungedämpft. <span class="src">1.3 · S. 5</span></p></div>
+
+  <h3>Charakteristikenverfahren <span class="star">★★★</span></h3>
+  <div class="cols">
+    <div class="box"><p>Die Saint-Venant-PDGs werden in zwei Paare gewöhnlicher DGLs umgeformt, also das, was ein mitbewegter Beobachter sieht. Mit c² = gh und Addition/Subtraktion ergibt sich:</p>
+      <p class="f">[∂/∂t + (v ± c)·∂/∂x](v ± 2c) = g(I<sub>s</sub> − I<sub>e</sub>)</p>
+      <p class="f">C⁺: dx/dt = v + √(gh) &nbsp;&nbsp; C⁻: dx/dt = v − √(gh)</p>
+      <p>Insgesamt 4 gewöhnliche DGLs. Integriert wird entlang der Charakteristiken (natürliche Methode) oder in einem festen Gitter (lokale Methode).</p><span class="src">1.3 · S. 8–10</span></div>
+    <div class="box"><p><span class="plus">+</span> bildet die Physik gut ab, gut bei Unstetigkeiten (Damm- und Deichbruchwelle)</p>
+      <p><span class="minus">−</span> sehr hoher Rechenaufwand bei langen Strecken und Zeiträumen</p>
+      <p>Heute vor allem in 2D-Finite-Volumen-Modellen an den Zellgrenzen im Einsatz.</p><span class="src">1.3 · S. 12</span>
+      <p class="note">Weitere Verfahren für instationäre Rechnungen: FD, FE, FV (→ 2.1). <span class="src">1.3 · S. 7</span></p></div>
+  </div>
+
+  <h3>Differentialgleichung der Spiegellinie <span class="star">★★</span></h3>
+  <div class="cols">
+    <div class="box"><p class="f">dh/dx = (J<sub>s</sub> − J<sub>e</sub>) / (1 − α·Fr²) &nbsp;&nbsp; Fr² = Q²B/(gA³)</p>
+      <p>Voraussetzungen: kleines Sohlgefälle (cos θ ≈ 1), prismatisches Gerinne, kein seitlicher Zu- oder Abfluss (dQ/dx = 0), hydrostatischer Druck.</p>
+      <p>Für das Rechteckgerinne: dh/dx = J<sub>s</sub>·(1 − (h<sub>N</sub>/h)³)/(1 − (h<sub>gr</sub>/h)³)</p><span class="src">1.3 · S. 13–18</span></div>
+    <div class="box merke"><h4>Grenzzustand</h4><p>Bei dh<sub>e</sub>/dh = 0 geht dh/dx → ∞. Die Spiegellinie kann den Grenzzustand nicht stetig erreichen oder überschreiten. Der Übergang von schießend nach strömend erfolgt deshalb als <b>Wechselsprung</b>.</p><span class="src">1.3 · S. 17</span></div>
+  </div>
+  <ul class="pts">
+    <li><b>Strömender Zufluss:</b> Normalabfluss, Staulinie (z. B. vor einer Wehranlage), Senkungslinie (z. B. vor einem Überfallwehr), Anstieg bei schießendem Zufluss (unter einem Schütz). <span class="src">1.3 · S. 19</span></li>
+    <li><b>Schießender Zufluss:</b> Normalabfluss schießend, asymptotischer Übergang zum schießenden Normalabfluss, sprunghafter Anstieg (Wechselsprung) vor einer Wehranlage. <span class="src">1.3 · S. 20</span></li>
+    <li><b>Schrittweise Berechnung:</b> w<sub>j+1</sub> schätzen, rechte Seite auswerten, verbessern und iterieren, bis der Fehler klein genug ist. Erweiterte Bernoulli-Gleichung mit h<sub>r</sub> = J<sub>e</sub>·Δx und Strickler-J<sub>e</sub> aus gemittelten A und R. <span class="src">1.3 · S. 22–23</span></li>
+  </ul>
+
+  <h3>Welche Methode wofür? <span class="star">★★</span></h3>
+  <div class="tbl"><table>
+    <tr><th>Abfluss</th><th>Strecke</th><th>Reibung</th><th>Ansatz</th></tr>
+    <tr><td>Normalabfluss</td><td>lang, gleichförmig</td><td>berücksichtigen</td><td>Fließformeln</td></tr>
+    <tr><td>allmählich veränderlich</td><td>lang, homogen</td><td>berücksichtigen</td><td>DGL der Spiegellinie</td></tr>
+    <tr><td>allmählich veränderlich</td><td>inhomogen</td><td>berücksichtigen</td><td>schrittweise Spiegellinienberechnung</td></tr>
+    <tr><td>abrupt (Erweiterung, Wechselsprung, lokale Verluste)</td><td>kurz</td><td>vernachlässigbar</td><td>Energie- bzw. Impulsbilanz</td></tr>
+  </table></div>
+  <p class="src">1.3 · S. 27</p>
+
+  <div class="cols">
+    <div class="box"><h4>Datenbedarf 1D <span class="star">★★★</span></h4>
+      <ul class="pts"><li>Querprofile in regelmäßigem Abstand, verdichtet bei Bauwerken und starker Morphodynamik</li><li>Kenntnis der Strecke für die Rauheit (Korngrößen, Ufer, Vegetation)</li><li>Abfluss am oberen Rand</li><li>Wasserspiegel, Schlüsselkurve oder Energiegefälle am unteren Rand</li><li>Bauwerke und Einbauten</li></ul><span class="src">1.3 · S. 28</span></div>
+    <div class="box"><h4>Voranalyse und Anwendung</h4>
+      <ul class="pts"><li>Geometrie aus Vermessung, Höhenlinien oder DGM; Rauheit aus Erfahrung oder Rückrechnung beobachteter Wasserspiegel</li><li>Vorab prüfen: Wehre und Schwellen, Engstellen, Gefälle- und Rauheitswechsel, Abflusszustand, Kontrollquerschnitte, Rechenrichtung</li><li>Software: FLUX/FLORIS, HEC-RAS, MIKE 11, WASPI</li></ul><span class="src">1.3 · S. 24–29</span></div>
+  </div>
+</section>
+
+<!-- ============ 2.1 NUMERIK ============ -->
+<section class="ch" id="numerik">
+  <div class="ch-head"><span class="unit">UNIT 2.1 · NUMERICAL METHODS</span><h2>Numerische Methoden</h2></div>
+
+  <div class="cols">
+    <div class="box"><h4>Allgemeine Erhaltungsgleichung <span class="star">★★★</span></h4>
+      <p class="f">∂(ρφ)/∂t + ∂(ρφu<sub>j</sub>)/∂x<sub>j</sub> = ∂/∂x<sub>j</sub>(Γ·∂φ/∂x<sub>j</sub>) + S<sub>φ</sub></p>
+      <p>Instationär + Konvektion = Diffusion + Quelle. φ = 1 ergibt die Masse (Kontinuität ∂u<sub>j</sub>/∂x<sub>j</sub> = 0), φ = u<sub>i</sub> den Impuls (Navier-Stokes), die Energie führt z. B. zum k-ε-Modell. Das Modell muss also nur diesen einen Gleichungstyp lösen: eine nichtlineare PDG 2. Ordnung.</p><span class="src">2.1 · S. 5–8</span></div>
+    <div class="box merke"><h4>Schließungsproblem <span class="star">★★★</span></h4>
+      <p><b>4 Gleichungen</b> (3 × Navier-Stokes + Kontinuität), aber <b>5 Unbekannte</b> (u, v, w, p und die Reynoldsspannung bzw. ν<sub>T</sub>). Damit das System nicht „offen“ bleibt, braucht es eine Schließungshypothese, also ein Turbulenzmodell.</p><span class="src">2.1 · S. 13</span></div>
+  </div>
+
+  <h3>DNS, LES, RANS <span class="star">★★★</span></h3>
+  <div class="tbl"><table>
+    <tr><th>Verfahren</th><th>Idee</th><th>Problem / Eigenschaft</th></tr>
+    <tr><td><b>DNS</b><br><span class="note">Direct Numerical Simulation</span></td><td>alle Wirbel direkt auflösen</td><td>kleinste Wirbel ≈ 10<sup>−3</sup> × Gebietsgröße → mindestens 10<sup>9</sup> Knoten; liefert statistische Information, deren Interpretation schwierig ist</td></tr>
+    <tr><td><b>LES</b><br><span class="note">Large Eddy Simulation</span></td><td>Bewegungen in Gittergröße werden aufgelöst (<em>grid scale</em>), kleinere modelliert (<em>subgrid scale</em>)</td><td>Idee stammt aus der Meteorologie</td></tr>
+    <tr><td><b>RANS</b><br><span class="note">Reynolds-Averaged N-S</span></td><td>Zerlegung u = ū + u′, p = p̄ + p′ und zeitliche Mittelung</td><td>neuer Term −ρ·u′<sub>i</sub>u′<sub>j</sub> (Reynoldsspannung) → Turbulenzmodell nötig</td></tr>
+  </table></div>
+  <p class="src">2.1 · S. 10–11</p>
+
+  <div class="cols">
+    <div class="box"><h4>Wirbelviskosität nach Boussinesq <span class="star">★★★</span></h4>
+      <p class="f">−u′<sub>i</sub>u′<sub>j</sub> = ν<sub>T</sub>(∂u<sub>i</sub>/∂x<sub>j</sub> + ∂u<sub>j</sub>/∂x<sub>i</sub>) − ⅔δ<sub>ij</sub>k</p>
+      <p>ν<sub>T</sub> ist <b>keine Stoffeigenschaft</b> wie ν, sondern eine Eigenschaft der Strömung. Sie hängt von der Art der Turbulenz ab.</p><span class="src">2.1 · S. 12</span></div>
+    <div class="box"><h4>Mischungsweg nach Prandtl <span class="star">★★</span></h4>
+      <p class="f">ν<sub>T</sub> = l<sub>m</sub>²·|∂u/∂y|</p>
+      <p>Gut für einfache Strömungen. In Wandnähe l<sub>m</sub> = κ·δ·(1 − e<sup>−y⁺/A</sup>) mit κ ≈ 0,41 (von Kármán) und A ≈ 26.</p><span class="src">2.1 · S. 14</span></div>
+    <div class="box"><h4>k-ε-Modell <span class="star">★★★</span></h4>
+      <p>k = turbulente kinetische Energie, ε = Dissipationsrate (Umwandlung in Wärme). Je eine Transportgleichung für k und ε.</p>
+      <p class="f">ν<sub>T</sub> = c<sub>μ</sub>·k²/ε, &nbsp; c<sub>μ</sub> ≈ 0,09</p>
+      <p>Konstanten: C<sub>ε1</sub> = 1,44, C<sub>ε2</sub> = 1,92, σ<sub>k</sub> = 1,0, σ<sub>ε</sub> = 1,3. Damit 6 Gleichungen für 6 Unbekannte (u, v, w, p, k, ε).</p><span class="src">2.1 · S. 15–16</span></div>
+  </div>
+
+  <h3>Gitter <span class="star">★★★</span></h3>
+  <div class="lab">
+    <div class="lab-head"><h4>Gittertypen</h4><span class="src">2.1 · S. 18–24</span></div>
+    <div class="lab-plot" style="padding:16px"><svg id="grid-svg" viewBox="0 0 640 220" role="img" aria-label="Strukturiertes, Multiblock- und unstrukturiertes Gitter"></svg></div>
+  </div>
+  <div class="cols">
+    <div class="box"><p><b>Strukturiert:</b> konstante Anzahl Unterteilungen n<sub>x</sub>, n<sub>y</sub>, n<sub>z</sub>; Zelle und Nachbarn eindeutig über Indizes; wenig Speicher, weil keine Zuordnungstabelle nötig. Varianten: regulär, orthogonal, krummlinig.</p>
+      <p><b>Multiblock:</b> mehrere strukturierte Blöcke, flexibler; die Blockgrenzen brauchen eine numerische Sonderbehandlung.</p>
+      <p><b>Unstrukturiert:</b> Anzahl der Nachbarn nicht festgelegt; braucht Zuordnungstabelle (Knoten, Koordinaten, Knoten-Zell-Zuordnung); passt sich komplexer Geometrie an.</p></div>
+    <div class="tbl"><table>
+      <tr><th>Eigenschaft</th><th>strukt.</th><th>unstrukt.</th></tr>
+      <tr><td>komplexe Geometrie</td><td class="minus">−</td><td class="plus">+</td></tr>
+      <tr><td>lokale Verfeinerung</td><td class="minus">−</td><td class="plus">+</td></tr>
+      <tr><td>Automatisierung der Netzerstellung</td><td class="minus">−</td><td class="plus">+</td></tr>
+      <tr><td>Rechenzeit der Netzerstellung</td><td class="plus">+</td><td class="minus">−</td></tr>
+      <tr><td>Programmieraufwand</td><td class="plus">+</td><td class="minus">−</td></tr>
+      <tr><td>Datenspeicherung</td><td class="plus">+</td><td class="minus">−</td></tr>
+      <tr><td>Lösen der Gleichungssysteme</td><td class="plus">+</td><td class="minus">−</td></tr>
+    </table></div>
+  </div>
+
+  <h3>FD, FV, FE <span class="star">★★★</span></h3>
+  <div class="tbl"><table>
+    <tr><th>Methode</th><th>Formulierung</th><th>Kernidee</th><th>Merkmal</th></tr>
+    <tr><td><b>Finite Differenzen</b></td><td>Differentialform</td><td>abgebrochene Taylorreihe: ∂²φ/∂x² ≈ (φ<sub>i−1</sub> − 2φ<sub>i</sub> + φ<sub>i+1</sub>)/Δx²</td><td>Fehler O(Δx²); beim Poisson-Problem tridiagonale Matrix → schnell lösbar mit dem <b>Thomas-Algorithmus</b></td></tr>
+    <tr><td><b>Finite Volumen</b></td><td>Integralform</td><td>Integration über das Kontrollvolumen: a<sub>P</sub>φ<sub>P</sub> = a<sub>E</sub>φ<sub>E</sub> + a<sub>W</sub>φ<sub>W</sub> + S</td><td>Bilanz in jeder Zelle → Masse, Impuls und Energie automatisch erhalten (<b>konservativ</b>), auch bei groben Gittern keine unphysikalischen Ergebnisse</td></tr>
+    <tr><td><b>Finite Elemente</b></td><td>schwache Integralform</td><td>Polynom-Ansatz je Element (Ansatzfunktionen N<sub>i</sub>), Methode der gewichteten Residuen</td><td>Diskretisierungsfehler verschwindet nach der Integration</td></tr>
+  </table></div>
+  <p class="src">2.1 · S. 25–39</p>
+
+  <div class="cols">
+    <div class="box"><h4>CDS: zentrale Differenzen</h4><p class="f">φ<sub>e</sub> = (φ<sub>P</sub> + φ<sub>E</sub>)/2</p><p>Problem: Wenn die Konvektion dominiert, beeinflusst die stromab liegende Zelle das Ergebnis. Das widerspricht der Physik.</p><span class="src">2.1 · S. 36</span></div>
+    <div class="box"><h4>UDS: Upwind</h4><p class="f">φ<sub>w</sub> = φ<sub>W</sub>, φ<sub>e</sub> = φ<sub>P</sub> (bei u &gt; 0)</p><p>Der Wert wird von stromauf genommen. Weitere Varianten: Second Order Upwind (SOU), Hybrid (Mischung aus UDS und CDS), Power Law.</p><span class="src">2.1 · S. 37</span></div>
+  </div>
+
+  <h3>Explizit vs. implizit <span class="star">★★★</span></h3>
+  <div class="cols">
+    <div class="box"><h4>Explizit</h4><p>Neue Werte bei t+Δt nur aus bekannten Werten bei t.</p><p><span class="plus">+</span> einfach zu handhaben und zu programmieren, kein Gleichungslöser</p><p><span class="minus">−</span> nur bedingt stabil: funktioniert nicht für alle Δx und Δt (CFL-Kriterium)</p><span class="src">2.1 · S. 40–43</span></div>
+    <div class="box"><h4>Implizit</h4><p>Neue Werte hängen auch von Nachbarwerten zum selben neuen Zeitpunkt ab.</p><p><span class="plus">+</span> unbedingt stabil</p><p><span class="minus">−</span> nur iterativ lösbar, komplexes Gleichungssystem, Löser nötig</p><span class="src">2.1 · S. 45</span></div>
+  </div>
+
+  <div class="lab" id="lab-heat">
+    <div class="lab-head"><h4>Experiment: Wärmeleitung ∂T/∂t = ∂²T/∂x² + 1, explizit vs. implizit</h4><span class="src">2.1 · S. 42</span></div>
+    <div class="lab-body">
+      <div class="lab-plot"><svg id="heat-svg" viewBox="0 0 540 320" role="img" aria-label="Temperaturprofil explizit und implizit"></svg></div>
+      <div class="lab-ctl">
+        <div class="ctl"><label for="heat-r">r = Δt/Δx² <output id="heat-r-o"></output></label><input id="heat-r" type="range" min="0.1" max="1" step="0.025" value="0.525"></div>
+        <div class="ctl"><label for="heat-t">Simulierte Zeit t <output id="heat-t-o"></output></label><input id="heat-t" type="range" min="0.02" max="1" step="0.02" value="0.3"></div>
+        <div class="out" id="heat-out"></div>
+        <p class="note">Folienbeispiel: T(x,0) = T(0,t) = T(1,t) = 0, 20 Intervalle. Bei Δt = 1,05·Δx²/2 (r = 0,525) wird die explizite Lösung instabil. Dass explizit nur bis r ≤ 0,5 stabil ist, ist die Standard-Stabilitätsgrenze dieses Schemas; sie steht nicht ausdrücklich auf der Folie. Gestrichelt: stationäre exakte Lösung x(1−x)/2.</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="lab" id="lab-cfl">
+    <div class="lab-head"><h4>Rechner: CFL-Kriterium für 1D-Wellen <span class="star">★★★</span></h4><span class="src">2.1 · S. 43–44</span></div>
+    <div class="lab-body">
+      <div class="lab-plot" style="display:grid;gap:10px;align-content:start">
+        <p class="f">Δt · sup|f′(u)| / Δx ≤ 1 &nbsp;⇒&nbsp; Δt ≤ Δx / (u + c), &nbsp; c = √(g·h)</p>
+        <p>Folienbeispiel: Hochwasser mit h = 5 m, Querprofile alle 1 km, u = 2 m/s → c ≈ 7 m/s → Δt ≤ 1000/9 ≈ 111 s, also unter 2 min. Für die zeitliche Entwicklung der Welle würden 15–30 min reichen. Explizite Verfahren verursachen hier also großen Rechenaufwand, der physikalisch nicht nötig wäre, und bei feinen Gittern wird Δt noch kleiner.</p>
+        <div id="cfl-bar"></div>
+      </div>
+      <div class="lab-ctl">
+        <div class="ctl"><label for="cfl-h">Wassertiefe h [m]</label><input id="cfl-h" type="number" step="0.1" min="0.1" value="5"></div>
+        <div class="ctl"><label for="cfl-u">Fließgeschwindigkeit u [m/s]</label><input id="cfl-u" type="number" step="0.1" min="0" value="2"></div>
+        <div class="ctl"><label for="cfl-dx">Gitterabstand Δx [m]</label><input id="cfl-dx" type="number" step="1" min="1" value="1000"></div>
+        <div class="ctl"><label for="cfl-dt">gewünschter Zeitschritt Δt [s]</label><input id="cfl-dt" type="number" step="1" min="1" value="900"></div>
+        <div class="out" id="cfl-out"></div>
+      </div>
+    </div>
+  </div>
+
+  <h3>Eigenschaften numerischer Verfahren <span class="star">★★★</span></h3>
+  <div class="cols">
+    <div class="box"><p>Für jeden Ort und Zeitpunkt gibt es drei Lösungen: (a) exakte Lösung der PDG, (b) exakte Lösung der diskretisierten Gleichung, (c) tatsächlich berechnete Lösung.</p>
+      <p><b>Diskretisierungsfehler</b> = a − b, <b>Lösungsfehler</b> = b − c.</p><span class="src">2.1 · S. 46</span></div>
+    <div class="box"><ol class="steps">
+      <li><b>Konsistenz:</b> Δx, Δt → 0 ⇒ Diskretisierungsfehler → 0</li>
+      <li><b>Stabilität:</b> Lösungsfehler bleibt beschränkt; Störungen (z. B. Rundungsfehler) werden gedämpft</li>
+      <li><b>Konvergenz</b> = Konsistenz + Stabilität: feinere Gitter nähern die exakte Lösung immer besser an</li>
+      <li><b>Konservativität:</b> Physik wird unabhängig vom Gitter abgebildet; FVM ist konservativ</li>
+      <li><b>Beschränktheit:</b> physikalische Grenzen, z. B. Wassertiefe &gt; 0</li></ol><span class="src">2.1 · S. 48–49</span></div>
+    <div class="box merke"><h4>Faustregeln für Gitter und Ränder</h4>
+      <ul class="pts"><li>Vierecke (3D: „Bricks“) sind für CFD besser als Dreiecke</li><li>Seitenverhältnis nie kleiner als 1:10</li><li>Flächenverhältnis benachbarter Zellen max. 1:2</li><li>Winkel zwischen Kanten immer &gt; 10°</li><li>Gitter an der Strömung ausrichten</li><li><b>Zero Gradient:</b> Ableitung am Rand = 0 (z. B. unten: v konstant). <b>Dirichlet:</b> Wert vorgegeben (z. B. oben: Q bekannt)</li></ul><span class="src">2.1 · S. 50</span></div>
+  </div>
+</section>
+
+<!-- ============ 2.2 RAUHEIT ============ -->
+<section class="ch" id="rauheit">
+  <div class="ch-head"><span class="unit">UNIT 2.2 · FLOW RESISTANCE AND CALIBRATION</span><h2>Fließwiderstand und Kalibrierung</h2></div>
+  <p class="prose">Der Abfluss ist ein Gleichgewicht aus Hangabtriebskraft und Reibung. Das Kernproblem ist, einen Rauheitsbeiwert zu finden, der alle Widerstandsanteile erfasst. <span class="src">2.2 · S. 4</span></p>
+
+  <div class="cols">
+    <div class="box"><span class="tag">Anteil 1</span><h4>Kornrauheit</h4><p>Oberflächenreibung an der Wandung; korreliert gut mit einer repräsentativen Korngröße. Absolute Rauheit d<sub>s</sub>, relative Rauheit R/d<sub>s</sub>.</p><span class="src">2.2 · S. 6</span></div>
+    <div class="box"><span class="tag">Anteil 2</span><h4>Formrauheit</h4><p>Unregelmäßigkeiten der Berandung, z. B. Expansionsverluste hinter Dünen und Riffeln. Wirkt bei Niederwasser stärker, bei Hochwasser kaum. Dann erhöhen Geschiebetransport, Schwebstoff, Krümmungs-Spiralströmung und lokale Hindernisse den Widerstand.</p><span class="src">2.2 · S. 7–8</span></div>
+    <div class="box"><span class="tag">Anteil 3</span><h4>Interaktion</h4><p>Austausch zwischen Zonen unterschiedlicher Strömung in gegliederten Querschnitten mit Vorlandabfluss und Vegetation (Trennflächen).</p><span class="src">2.2 · S. 9</span></div>
+  </div>
+
+  <div class="cols">
+    <div class="box"><h4>Universelles Fließgesetz <span class="star">★★</span></h4>
+      <p class="f">v = √(8gRI/λ), &nbsp; 1/√λ = −C<sub>1</sub>·log(k<sub>s</sub>/(C<sub>2</sub>R) + C<sub>3</sub>/(Re√λ))</p>
+      <p><b>Hydraulisch glatt:</b> nur die Viskosität zählt, der k<sub>s</sub>-Term entfällt. <b>Hydraulisch rau:</b> nur die relative Rauheit zählt, der Re-Term entfällt. <b>Übergang:</b> beides.</p><span class="src">2.2 · S. 10–11</span></div>
+    <div class="box merke"><h4>Grenzen der Strickler-Formel <span class="star">★★★</span></h4>
+      <ul class="pts"><li>Viskosität fehlt → nur hydraulisch rau gültig</li><li>relative Rauheit (Rauheit zu Wassertiefe) fehlt → nur für mittlere relative Rauheit gültig</li><li>k<sub>St</sub> ist nicht dimensionslos → nur für die Gerinnegröße gültig, für die er bestimmt wurde</li><li>Querschnittsform steckt nicht eindeutig in R</li><li>gegliederte Querschnitte, Sedimenttransport und veränderliche Sohlformen werden nicht berücksichtigt</li></ul><span class="src">2.2 · S. 14</span></div>
+  </div>
+
+  <div class="lab" id="lab-strickler">
+    <div class="lab-head"><h4>Rechner: Strickler-Beiwert aus d<sub>90</sub> und Fließgeschwindigkeit</h4><span class="src">2.2 · S. 12–13 · PU 3 · S. 4</span></div>
+    <div class="lab-body">
+      <div class="lab-plot"><svg id="ks-svg" viewBox="0 0 540 300" role="img" aria-label="k_St über d90"></svg></div>
+      <div class="lab-ctl">
+        <div class="ctl"><label for="ks-d">d<sub>90</sub> [mm] <output id="ks-d-o"></output></label><input id="ks-d" type="range" min="2" max="300" step="1" value="64"></div>
+        <div class="ctl"><label for="ks-a">Beiwert a</label>
+          <div class="seg" role="group" aria-label="Beiwert a"><button type="button" data-a="21.1" aria-pressed="true">Strickler 21,1</button><button type="button" data-a="26" aria-pressed="false">MPM 26</button></div></div>
+        <div class="ctl"><label for="ks-r">hydraulischer Radius R [m] <output id="ks-r-o"></output></label><input id="ks-r" type="range" min="0.2" max="6" step="0.1" value="2"></div>
+        <div class="ctl"><label for="ks-i">Gefälle I [‰] <output id="ks-i-o"></output></label><input id="ks-i" type="range" min="0.1" max="10" step="0.1" value="1.5"></div>
+        <div class="out" id="ks-out"></div>
+        <p class="note">k<sub>St</sub> = a / d<sub>s</sub><sup>1/6</sup> mit d<sub>s</sub> = d<sub>90</sub> in m; n = 1/k<sub>St</sub>; v = k<sub>St</sub>·R<sup>2/3</sup>·I<sup>1/2</sup>.</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="cols">
+    <div class="box"><h4>Weitere Ansätze <span class="star">★</span></h4>
+      <p><b>Limerinos</b> (Feinkies bis Steine): n = 0,0926·R<sup>1/6</sup> / (1,16 + 2,0·log(R/d<sub>84</sub>))</p>
+      <p><b>Jarrett</b> (Sohlgefälle 0,002–0,04): n = 0,39·I<sup>0,38</sup>·R<sup>−0,16</sup></p>
+      <p><b>Jäggi:</b> a abhängig von Z = h/d<sub>s</sub>, d<sub>s</sub> = d<sub>90</sub></p><span class="src">2.2 · S. 13, 15</span></div>
+    <div class="box"><h4>Woher kommt der Rauheitswert?</h4>
+      <ul class="pts"><li>Literaturwerte (z. B. k<sub>St</sub>-Tabelle Habersack 1995)</li><li>Ingenieurserfahrung</li><li>Messungen in der Natur und Modellkalibrierung</li><li>analytische Ansätze für einzelne Widerstandsanteile</li></ul><span class="src">2.2 · S. 16–17</span></div>
+  </div>
+
+  <h3>Typischer Kalibrierungsablauf <span class="star">★★★</span></h3>
+  <ol class="steps">
+    <li>Sohlproben im Hauptgerinne nehmen, sieben, d<sub>90</sub> bestimmen, k<sub>s</sub> = d<sub>90</sub> ansetzen</li>
+    <li><b>Wasserspiegelfixierung</b> im Feld bei mehreren Abflüssen, eventuell zusätzlich Geschwindigkeitsmessungen</li>
+    <li>historische Wasserstände im Vorland erheben (Hochwassermarken, „stumme Zeugen“)</li>
+    <li>Vorlandrauheit aus Begehung, Erfahrung und Tabellen zuweisen</li>
+    <li>Rauheiten im Modell (Fluss <em>und</em> Vorland) ändern, bis berechnete und gemessene Wasserspiegel übereinstimmen; übliche Genauigkeit <b>1 cm</b></li>
+  </ol>
+  <div class="box merke"><h4>Tiefenabhängigkeit</h4><p>Weil k<sub>St</sub> von der Wassertiefe abhängt, braucht es <b>getrennte Modelle für Nieder-, Mittel- und Hochwasser</b>. Zwei Methoden werden kombiniert: direkt über d<sub>90</sub>, und Rückrechnung aus gemessenen Wasserspiegeln bzw. Geschwindigkeitsprofilen. <span class="src">2.2 · S. 19–20</span></p></div>
+
+  <div class="cols">
+    <div class="box"><h4>Vegetation (DVWK 1991) <span class="star">★★</span></h4>
+      <ul class="pts"><li><b>Niedrig:</b> klein im Vergleich zur Wassertiefe → wie Wandrauheit behandeln</li><li><b>Mittel:</b> etwa so hoch wie die Wassertiefe; überströmt → großer Rauheitsbeiwert, durchströmt → wie hohe Vegetation</li><li><b>Hoch:</b> mindestens so hoch wie die Wassertiefe, wird durchströmt; Parameter a<sub>x</sub>, a<sub>y</sub> (Abstände), d<sub>p</sub> (Durchmesser); Verfahren nach Pasche oder Mertens</li></ul><span class="src">2.2 · S. 21–23</span></div>
+    <div class="box"><h4>Verschiedene Rauheiten im Querschnitt <span class="star">★★</span></h4>
+      <p>Zuerst je Teilabschnitt λ bzw. k<sub>St</sub> bestimmen. Unter der Annahme eines kompakten Querschnitts und gleicher mittlerer Geschwindigkeiten ergibt sich eine Ersatzrauheit nach <b>Einstein/Horton</b>:</p>
+      <p class="f">k<sub>St</sub> = [ l<sub>u</sub> / Σ(l<sub>u,i</sub> / k<sub>St,i</sub><sup>3/2</sup>) ]<sup>2/3</sup> &nbsp;&nbsp; λ = Σ(λ<sub>i</sub>·l<sub>u,i</sub>)/l<sub>u</sub></p><span class="src">2.2 · S. 24–25</span></div>
+  </div>
+</section>
+
+<!-- ============ 3 2D/3D ============ -->
+<section class="ch" id="mehrdim">
+  <div class="ch-head"><span class="unit">UNITS 3.1 + 3.2 · 2-D AND 3-D MODELS</span><h2>2D- und 3D-Modelle</h2></div>
+
+  <div class="tbl"><table>
+    <tr><th></th><th>2D-Modell</th><th>3D-Modell</th></tr>
+    <tr><td>Gleichungen</td><td>tiefengemittelte Flachwassergleichungen (<em>shallow water</em>)</td><td>Reynoldsgleichungen in drei Raumrichtungen</td></tr>
+    <tr><td>Anzahl</td><td>2 Impulsgleichungen + 1 Kontinuität</td><td>3 Impulsgleichungen + 2 Turbulenzgleichungen + 1 Kontinuität</td></tr>
+    <tr><td>Druck</td><td>hydrostatisch angenommen</td><td>keine hydrostatische Annahme</td></tr>
+    <tr><td>Netz</td><td>horizontale Zerlegung genügt</td><td>zusätzlich vertikale Zerlegung</td></tr>
+    <tr><td>Rauheit</td><td>Strickler/Manning (tiefenabhängig!)</td><td>meist absolute Rauheit k<sub>s</sub> nach Nikuradse (≈ D<sub>90</sub>) → keine Tiefenabhängigkeit</td></tr>
+    <tr><td>Stabilität</td><td>heute fast problemlos</td><td>„Achillesferse“: viele gekoppelte, nichtlineare Gleichungen</td></tr>
+  </table></div>
+  <p class="src">3.1 · S. 7, 23, 43</p>
+
+  <div class="cols">
+    <div class="box"><h4>Was nur 3D liefert <span class="star">★★</span></h4>
+      <ul class="pts"><li>Geschwindigkeit und Richtung in verschiedenen Tiefenschichten</li><li>Sekundärströmungen</li><li>Querneigung des Wasserspiegels (links/rechts) durch Zentrifugalkräfte</li><li>komplexe Strömung an Bauwerken (Buhnen, Pfeiler) und in Kolken</li><li>Grundlagen für Sedimenttransport und Schifffahrt</li></ul><span class="src">3.1 · S. 6, 25–35</span></div>
+    <div class="box"><h4>Datenbedarf 2D/3D <span class="star">★★★</span></h4>
+      <ul class="pts"><li>detailliertes DGM mit Bruchkanten und Bauwerken (LiDAR + Multibeam)</li><li>Q am oberen Rand, Wasserspiegel bzw. Energiegefälle am unteren Rand</li><li>ADV/ADCP-Geschwindigkeiten und Wasserspiegel zur Kalibrierung</li><li>ideal: D<sub>50</sub>, D<sub>90</sub>; hochfrequente Messungen (&gt; 32 Hz) für Turbulenzparameter</li></ul>
+      <p>Ohne gute Daten geht der Mehrwert eines höherdimensionalen Modells völlig verloren.</p><span class="src">3.1 · S. 9</span></div>
+  </div>
+
+  <div class="cols">
+    <div class="box"><span class="tag">Übungsmodell</span><h4>RSim-2D <span class="star">★★★</span></h4>
+      <ul class="pts"><li>2008–2009 entwickelt</li><li>Dreiecksnetz, <b>Finite Elemente</b></li><li>Turbulenz: <b>Smagorinsky</b></li><li>instationär, Verfahren 1. und 2. Ordnung</li><li>Input: DGM, Bruchkanten, Rauheit, Ganglinie am Zufluss, Wasserspiegel am Abfluss</li></ul><span class="src">3.1 · S. 10</span></div>
+    <div class="box"><span class="tag">Übungsmodell</span><h4>RSim-3D <span class="star">★★★</span></h4>
+      <ul class="pts"><li>seit 2005 am IWHW/BOKU weiterentwickelt</li><li>Polyedernetz, meist hexagonale Grundform</li><li><b>Finite Volumen</b></li><li>Turbulenz: <b>k-ε (Standard)</b></li><li>stationär und instationär (Rechenaufwand!)</li></ul><span class="src">3.1 · S. 11</span></div>
+  </div>
+
+  <h3>Netzphilosophien a–e <span class="star">★★</span></h3>
+  <ol class="steps" type="a">
+    <li>strukturiertes Netz aus Vierecken (2D) bzw. Hexaedern (3D), geometriefolgend; vertikal automatisch segmentiert</li>
+    <li>unstrukturiertes Dreiecksnetz, vertikal automatisch segmentiert</li>
+    <li>unstrukturierte Polygone bzw. Polyeder mit Bruchkanten (z. B. RSim-3D)</li>
+    <li>3D-Quader aus gleich großen Unterquadern, in dem die Geometrie „eingebaut“ wird (FLOW-3D)</li>
+    <li>manuell erzeugtes 3D-Netz mit räumlichen Verfeinerungszonen</li>
+  </ol>
+  <p class="prose">Der reine Vernetzungsaufwand ist für 2D und 3D oft ähnlich. <span class="src">3.1 · S. 13–22</span></p>
+
+  <div class="cols">
+    <div class="box"><h4>Modellaufbau <span class="star">★★★</span></h4><p>Am oberen Rand wird Q vorgegeben, am unteren h bzw. I<sub>e</sub>. Liegen die Ränder weit genug vom Untersuchungsgebiet entfernt, lassen sich die übrigen Größen (k, ε) empirisch abschätzen. Kalibriert wird in beiden Modelltypen über die Rauheit.</p><span class="src">3.1 · S. 23</span></div>
+    <div class="box"><h4>Grenzen von 3D <span class="star">★★★</span></h4><p>In der Praxis begrenzen nur das Turbulenzmodell (Vereinfachungen) und die Diskretisierung (Rechnerkapazität, Rechenzeit). Bei Modellen mit hydrostatischer Annahme ist die Lösung bei stark gekrümmten Stromlinien ungültig: Druckabsenkung bei konvexen, Druckanstieg bei konkaven Stromfäden.</p><span class="src">3.1 · S. 39–41</span></div>
+    <div class="box merke"><h4>Relaxation <span class="star">★★★</span></h4><p class="f">φ<sub>neu</sub> = α·φ<sub>berechnet</sub> + (1 − α)·φ<sub>alt</sub></p><p>Dämpft Instabilitäten. Relaxationsfaktoren sind „inert“: Sie ändern die Endlösung nicht, beeinflussen aber stark die Rechengeschwindigkeit. Zur Kunst der 3D-Simulation gehört auch die Wahl der numerischen Parameter.</p><span class="src">3.1 · S. 43–44</span></div>
+  </div>
+  <div class="cols">
+    <div class="box"><h4>Kosten und Rechenzeit</h4><p>Lizenzen etwas teurer (viele akademische Modelle frei). Datenanforderungen wie bei 2D. Aufbauaufwand kaum höher dank automatischer Vernetzung. Rechenzeit akademischer Modelle ca. 6 h bis 2 Tage je stationärem Abfluss für einige Kilometer. Die Mehrkosten stehen im Verhältnis zum Mehrwert.</p><span class="src">3.1 · S. 36–37</span></div>
+    <div class="box"><h4>Fazit</h4><p>Die Dimension der Strömungsprozesse beachten. Ohne ausreichende Felddaten wird das Potenzial nicht ausgeschöpft, Monitoring ist Pflicht. Nicht jedes Problem ist numerisch lösbar, deshalb auch Laborversuche und hybride Modellierung.</p><span class="src">3.1 · S. 46</span></div>
+  </div>
+
+  <h3>Beispiel 3.2: Hochwasser August 2002, Kamp und Donau <span class="star">★★</span></h3>
+  <div class="cols">
+    <div class="box"><p><b>Ziele:</b> Überlagerung von Donau- und Kamp-Hochwasser quantifizieren, ein grobes Modell auf Basis wenig detaillierter Geländedaten testen, Sensitivität von k<sub>St</sub> prüfen, Vergleich mit Luftbildern.</p>
+      <p><b>Modell Current2D:</b> Flachwassergleichungen, FEM auf Dreiecksnetz, explizites Euler-Verfahren, Wetting/Drying, Smagorinsky, Sohlreibung nach Strickler. DGM-Raster 250 m, keine Dämme im Vorland.</p>
+      <p><b>Jährlichkeit:</b> Kamp ca. 2.000–10.000 Jahre, Donau (Krems) geschätzt 100 Jahre.</p><span class="src">3.2 · S. 6, 12–16</span></div>
+    <div class="box merke"><h4>Ergebnis</h4><ul class="pts"><li>Die <b>Vorlandrauheit hat kaum Einfluss</b> auf Größe und Form der Überflutungsfläche</li><li>Im Osten sehr gute Übereinstimmung mit der Beobachtung</li><li>Lokale Abweichungen durch falsche Dammkronenhöhen (Krems) und menschliche Eingriffe: Sandsäcke, gezielte Dammöffnung</li><li>Brauchbar für operative Zwecke, aber <b>kein Ersatz</b> für eine detaillierte Modellierung</li></ul><span class="src">3.2 · S. 22, 30–31</span></div>
+  </div>
+</section>
+
+<!-- ============ 4 SEDIMENT ============ -->
+<section class="ch" id="sediment">
+  <div class="ch-head"><span class="unit">UNITS 4.1 + 4.2 · SEDIMENT TRANSPORT</span><h2>Sedimenttransport</h2></div>
+
+  <div class="cols">
+    <div class="box"><h4>Gleichungssystem (1D) <span class="star">★★★</span></h4>
+      <ul class="pts"><li>Wasser: Energie- bzw. Impulsgleichung, Kontinuität, Fließformel</li><li>Sediment-Kontinuität: <span class="m">(1 − n<sub>p</sub>)·∂A<sub>s</sub>/∂t + ∂Q<sub>s</sub>/∂x − q<sub>s</sub> = 0</span></li><li>Transportformel, z. B. Meyer-Peter/Müller</li></ul><span class="src">4.1 · S. 5</span></div>
+    <div class="box"><h4>Kopplung <span class="star">★★★</span></h4>
+      <p><b>Ungekoppelt:</b> Wasser → Sediment → Sohländerung, nacheinander.</p>
+      <p><b>Gekoppelt:</b> Strömung, Sediment und Morphodynamik werden gleichzeitig gelöst.</p>
+      <p><b>„Known Discharge“:</b> Q ist während eines Zeitschritts konstant, es werden nur Sedimentkontinuität und stationäre Spiegellinie gerechnet.</p><span class="src">4.1 · S. 6</span></div>
+  </div>
+
+  <div class="lab" id="lab-shields">
+    <div class="lab-head"><h4>Rechner: Bewegungsbeginn nach Shields <span class="star">★★★</span></h4><span class="src">4.1 · S. 9</span></div>
+    <div class="lab-body">
+      <div class="lab-plot" style="display:grid;gap:10px;align-content:start">
+        <p class="f">τ = ρ·g·I·R<sub>h</sub> &nbsp;&nbsp; τ<sub>c</sub> = θ<sub>c</sub>·(ρ<sub>s</sub> − ρ)·g·d &nbsp;&nbsp; θ = τ/((ρ<sub>s</sub> − ρ)·g·d)</p>
+        <p>Bewegungsbeginn bei θ = θ<sub>c</sub> (Shields-Parameter, auch Korn-Froude-Zahl Fr*). Das <b>Hjulström-Diagramm</b> (1935) arbeitet mit einer kritischen Geschwindigkeit ohne Abhängigkeit von Wassertiefe, Rauheit oder räumlichen Effekten und ist für die Praxis deshalb unbefriedigend. <span class="src">4.1 · S. 8</span></p>
+        <div id="sh-bar"></div>
+      </div>
+      <div class="lab-ctl">
+        <div class="ctl"><label for="sh-i">Gefälle I [‰] <output id="sh-i-o"></output></label><input id="sh-i" type="range" min="0.1" max="5" step="0.05" value="0.45"></div>
+        <div class="ctl"><label for="sh-r">R<sub>h</sub> [m] <output id="sh-r-o"></output></label><input id="sh-r" type="range" min="0.2" max="8" step="0.1" value="4"></div>
+        <div class="ctl"><label for="sh-d">Korndurchmesser d [mm] <output id="sh-d-o"></output></label><input id="sh-d" type="range" min="1" max="100" step="1" value="20"></div>
+        <div class="ctl"><label for="sh-t">θ<sub>c</sub> <output id="sh-t-o"></output></label><input id="sh-t" type="range" min="0.03" max="0.06" step="0.001" value="0.047"></div>
+        <div class="out" id="sh-out"></div>
+        <p class="note">Annahmen, nicht aus den Folien: ρ<sub>s</sub> = 2650 kg/m³ (Quarz), ρ = 1000 kg/m³, Standardwert θ<sub>c</sub> = 0,047 nach Meyer-Peter/Müller. Die Startwerte sind ein Beispiel ähnlich der Donau.</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="cols">
+    <div class="box"><h4>Geschiebeformeln <span class="star">★★★</span></h4>
+      <p><b>Deterministisch:</b> empirisch, über kritische Geschwindigkeit, kritischen Abfluss oder meist kritische Schubspannung. Beispiele: Meyer-Peter &amp; Müller (1948), Ackers &amp; White (1973).</p>
+      <p><b>Statistisch:</b> berücksichtigen turbulente Schwankungen. Beispiele: Einstein (1950), Sun &amp; Donahue (2000).</p>
+      <p>MPM ist die am häufigsten implementierte Formel. In fraktionsweiser Form (ATV-DVWK 2003) mit Anteil p<sub>i</sub>, Referenzdurchmesser d<sub>ref</sub> = d<sub>m</sub> und Hiding-Exposure-Koeffizient α.</p><span class="src">4.1 · S. 13–15</span></div>
+    <div class="box merke"><h4>Keine Formel gilt überall</h4><p>Die Formeln stammen meist aus Laborrinnen mit kleiner Datenbasis. Deshalb: Anwendungsbereich beachten („Arbeitsbehelf Feststofftransport“), Formel anhand von Feldmessungen auswählen und kalibrieren.</p><span class="src">4.1 · S. 16</span></div>
+    <div class="box"><h4>Deckschicht und Abrieb <span class="star">★★</span></h4><p><b>Deckschichtbildung</b> (<em>armouring</em>): empirische Ansätze (Knoroz, Günter, Little &amp; Mayer, Schöberl) mit charakteristischen Korngrößen von Deck- und Unterschicht, oder ungleichförmige Berechnung mit Sortiergleichungen.</p><p><b>Abrieb:</b> w = w<sub>0</sub>·e<sup>−a<sub>w</sub>·s</sup> (Gewicht w, Transportweg s).</p><span class="src">4.1 · S. 11–12</span></div>
+  </div>
+
+  <div class="cols">
+    <div class="box"><h4>Schwebstoff <span class="star">★★★</span></h4>
+      <p>Konvektions-Diffusions-Gleichung <b>je Kornfraktion</b>, numerisch gelöst (FD, FE, FV):</p>
+      <p class="f">∂c/∂t + ∂(u<sub>1</sub>c)/∂x<sub>1</sub> + ∂(u<sub>2</sub>c)/∂x<sub>2</sub> = ∂/∂x<sub>1</sub>(K<sub>t</sub>∂c/∂x<sub>1</sub>) + ∂/∂x<sub>2</sub>(K<sub>t</sub>∂c/∂x<sub>2</sub>) + s<sub>dep</sub> − s<sub>ero</sub></p>
+      <p>Austausch mit der Sohle über Quell- und Senkenterme: Deposition nach van Rijn (1984), Erosion nach Garcia &amp; Parker (1991). Die PDG selbst ist nicht empirisch. <b>K<sub>t</sub></b> ist der einzige änderbare Parameter und wird an gemessenen Konzentrationsprofilen kalibriert.</p><span class="src">4.1 · S. 18–20</span></div>
+    <div class="box"><h4>Sohlentwicklung: Exner-Gleichung <span class="star">★★★</span></h4>
+      <p class="f">(1 − n<sub>p</sub>)·∂z<sub>i</sub>/∂t + ∂q<sub>si,x</sub>/∂x + ∂q<sub>si,y</sub>/∂y = s<sub>dep,i</sub> − s<sub>ero,i</sub></p>
+      <p>Berücksichtigt Geschiebe und Schwebstoff. Sortierprozesse werden über das <b>Austauschschichtkonzept</b> abgebildet; die Dicke der Austauschschicht ist ein Kalibrierparameter.</p><span class="src">4.1 · S. 22</span></div>
+  </div>
+
+  <div class="cols">
+    <div class="box"><h4>Rand- und Anfangsbedingungen <span class="star">★★★</span></h4>
+      <ul class="pts"><li>Strömung: Q oben; Wasserspiegel, Energiegefälle usw. unten</li><li>Sediment: Schwebstoffkonzentration und Geschiebefracht (bzw. Zeitreihen) am Zufluss, Kornverteilungen von Schwebstoff, Geschiebe und Sohle</li><li>Anfangswerte oft nur geschätzt → <b>„Warm-up“-Phase</b> des Modells</li></ul><span class="src">4.1 · S. 24</span></div>
+    <div class="box merke"><h4>Wo die Modellgrenzen hingehören</h4><ul class="pts"><li>nicht in stark gekrümmten Flussbögen</li><li>nicht in Bereichen mit starken Gradienten</li><li>nicht zu nah an Zu- und Abflüssen</li><li>Ein- und Auslaufstrecke: <b>3–5 × Flussbreite</b> (Sensitivitätsanalyse bei Bauwerken oder Rauheitssprüngen)</li></ul><span class="src">4.1 · S. 25</span></div>
+    <div class="box"><h4>Datenbedarf Sediment <span class="star">★★★</span></h4>
+      <ul class="pts"><li>Sieblinien an mehreren morphologisch unterschiedlichen Stellen, mindestens Deck- und Unterschicht (Freeze-Core, Greifer, Linienzahlanalyse); Siebklassen 0,063 bis 90 mm</li><li>Schwebstoffprofile [mg/l] in ≥ 2 Querschnitten, ≥ 10 Messpunkte</li><li>Geschiebe [kg/(s·m)] mit Korbsammler in ≥ 2 Querschnitten</li><li>Kornverteilung von Schwebstoff und Geschiebe</li></ul><span class="src">4.1 · S. 28</span></div>
+  </div>
+
+  <h3>Beispiele 4.2: Donau <span class="star">★★</span></h3>
+  <div class="cols">
+    <div class="box"><h4>iSed</h4><p>Gekoppelt mit externer 2D- oder 3D-Hydrodynamik. Beliebig viele Kornfraktionen und Sohlschichten, Morphodynamik und Sortierung, Schwebstoff und Geschiebe getrennt. Validiert an einer 180°-Laborkrümmung (Yen &amp; Lee 1995, I = 0,0002, 300 min), Hydrodynamik mit RSim-3D in 8 Schichten.</p><span class="src">4.2 · S. 5–8</span></div>
+    <div class="box"><h4>Strombojen (hydrokinetisch)</h4><p>Eine einzelne Boje hat wenig Einfluss: leichte Erosion im Nahfeld, Anlandung stromab. <b>Mehrere wirken wie eine Leitwand</b> und erzeugen Strömungskonzentration mit Erosion und Anlandung weiter stromab. Die Energieentnahme ist im Modell noch eine Black Box.</p><span class="src">4.2 · S. 36</span></div>
+  </div>
+  <div class="tbl"><table>
+    <tr><th>Buhnenvariante (Witzelsdorf)</th><th>Wasserspiegel</th><th>Fahrrinne</th><th>Buhnenfelder / Ökologie</th></tr>
+    <tr><td>Abstand 1 × Buhnenlänge (enger)</td><td>steigt deutlich oberstrom</td><td>v und τ steigen → Erosion, großer Kolk</td><td>v sinkt</td></tr>
+    <tr><td>Buhnen 20 % länger</td><td>steigt (gut für Schifffahrt)</td><td>Erosion</td><td></td></tr>
+    <tr><td>Buhnen 20 % kürzer</td><td>unverändert</td><td>Tendenz zur Anlandung</td><td>v und τ steigen; ökologisch besser (Austausch)</td></tr>
+    <tr><td>größerer Abstand (3 ×)</td><td></td><td>Anlandung</td><td>ökologisch besser</td></tr>
+    <tr><td><b>Krone +0,4 m</b></td><td>steigt stark oberstrom</td><td>τ steigt, Erosion dort, wo heute Anlandung ist</td><td>v sinkt</td></tr>
+  </table></div>
+  <div class="box merke"><h4>Kernaussage Buhnen</h4><p>Die <b>Kronenhöhe ist der empfindlichste Parameter</b>. Über ihre Optimierung lässt sich ein morphodynamisches Gleichgewicht erreichen; sie ist deshalb die bevorzugte Variante. Orthogonale und inklinante Buhnen erodieren generell die Fahrrinne, nur deklinante führen per se zu Anlandung. Die Witzelsdorf-Strecke ist die einzige Stelle der österreichischen Donau unterhalb Wiens mit Anlandungstendenz, sonst erodiert die Sohle im Mittel um ca. 2 cm pro Jahr. <span class="src">4.2 · S. 11, 22–23</span></p></div>
+</section>
+
+<!-- ============ ÜBUNGEN ============ -->
+<section class="ch" id="uebungen">
+  <div class="ch-head"><span class="unit">PRACTICAL UNITS · HEC-RAS 1–5 · RSIM-2D · RSIM-3D</span><h2>Übungen</h2></div>
+  <p class="prose">In der Prüfung werden vermutlich eher Konzepte und Interpretation gefragt als Menüpfade. Hier stehen deshalb die hydraulischen Aussagen. Quelle: <code>Uebungsunterlagen/HEC-RAS_Angaben/*_EN.pdf</code>.</p>
+
+  <div class="cols">
+    <div class="box"><span class="tag">PU 1</span><h4>Schematisches 1D-Modell</h4>
+      <ul class="pts"><li>Strecke 4000 m, Gefälle 1,5 ‰, Profile alle 100 m, Trapez mit ca. 32 m Sohle, Böschung 1:2</li><li>Krümmungen wirken nur über die <b>Downstream Reach Lengths</b> (LOB/Channel/ROB), die Linienform im Lageplan nicht</li><li>Profile von links nach rechts eingeben; River Station steigt stromauf</li><li>Vorland n = 0,2 (k<sub>St</sub> = 5), Gerinne n = 0,0328 (k<sub>St</sub> = 30,5)</li><li>In HEC-RAS heißt <b>„Profile“ = Abfluss</b> (hier 300/500/700 m³/s)</li><li>RB ohne W-Q-Beziehung: Normal Depth (I<sub>E</sub> = I<sub>s</sub>) oder Critical Depth; oben <em>und</em> unten</li></ul><span class="src">PU 1 · S. 4–8</span></div>
+    <div class="box"><span class="tag">PU 2</span><h4>Stationär rechnen und interpretieren</h4>
+      <ul class="pts"><li>500 m³/s ist bordvoll, bei 700 m³/s ist das Vorland überflutet</li><li><b>Mixed Flow Regime</b> verwenden: nur damit gibt es einen Wechselsprung</li><li>Critical Depth als RB verfälscht den Wasserspiegel am unteren Ende → Ein- und Auslaufstrecke nötig</li><li><b>Encroachments</b> (XS 3000–2000): Rückstau oberstrom, in der Engstelle Beschleunigung und Absenkung</li><li><b>Wehr:</b> Grenztiefe auf der Krone, Wechselsprung unterstrom</li><li><b>Aufweitung:</b> Wasserspiegel sinkt, I<sub>E</sub> flacher → v und τ sinken → Anlandung</li></ul><span class="src">PU 2 · S. 2–12</span></div>
+  </div>
+
+  <div class="lab">
+    <div class="lab-head"><h4>PU 3: Fließwege im 1D-Modell richtig stellen <span class="star">★★★</span></h4><span class="src">PU 3 · S. 6–7</span></div>
+    <div class="lab-plot" style="padding:16px"><svg viewBox="0 0 640 250" role="img" aria-label="Querprofil mit Levee, Ineffective Flow Area und Obstruction">
+      <defs><pattern id="hatch" width="7" height="7" patternUnits="userSpaceOnUse" patternTransform="rotate(45)"><line class="hatch-line" x1="0" y1="0" x2="0" y2="7"/></pattern></defs>
+      <polygon class="water" points="214,112 414,112 404,205 224,205"/>
+      <rect x="62" y="104" width="62" height="44" fill="url(#hatch)"/>
+      <rect x="62" y="104" width="62" height="44" style="fill:none;stroke:var(--accent);stroke-dasharray:4 3"/>
+      <polygon class="ground" points="20,120 60,120 72,150 114,150 126,120 200,118 214,118 224,205 404,205 414,124 470,128 560,130 620,128 620,240 20,240"/>
+      <rect x="478" y="88" width="56" height="40" class="solid" style="fill:var(--muted)"/>
+      <polygon points="200,118 214,118 207,96" class="solid"/>
+      <line class="wline" x1="214" y1="112" x2="414" y2="112"/>
+      <line class="ref" x1="20" y1="104" x2="620" y2="104"/>
+      <text class="lbl-s" x="58" y="96">Ineffective Flow Area</text>
+      <text class="lbl" x="58" y="168">Seitengerinne (Confluent Creek)</text>
+      <text class="lbl-s" x="168" y="86">Levee</text>
+      <text class="lbl-s" x="478" y="78">Obstruction</text>
+      <text class="lbl" x="272" y="160">Hauptgerinne</text>
+      <text class="lbl" x="548" y="100">Wasserspiegel</text>
+      <line class="ink" x1="214" y1="222" x2="214" y2="232"/><line class="ink" x1="414" y1="222" x2="414" y2="232"/>
+      <text class="lbl" x="226" y="232">Bank Stations</text>
+      <text class="tick" x="30" y="232">LOB</text><text class="tick" x="300" y="232">Channel</text><text class="tick" x="590" y="232">ROB</text>
+    </svg></div>
+    <div class="cols" style="padding:0 16px 16px">
+      <div class="box"><h4>Levee</h4><p>Das Vorland wird erst durchströmt, wenn die Levee-Höhe überschritten ist. Bei Interpolation wird sie mitinterpoliert und kann dann über dem Gelände liegen.</p></div>
+      <div class="box"><h4>Ineffective Flow Area</h4><p>Füllt sich mit Wasser, aber es fließt nichts (Totwasser). Wird bei Interpolation <b>nicht</b> mitgenommen.</p></div>
+      <div class="box"><h4>Obstruction</h4><p>Blockierte Fläche: dort wird kein Wasser gespeichert und es fließt keines.</p></div>
+    </div>
+  </div>
+  <div class="cols">
+    <div class="box"><span class="tag">PU 3</span><h4>Gegliederte Querschnitte</h4>
+      <ul class="pts"><li>Ohne Korrektur rechnet HEC-RAS ohne Fehlermeldung falsche Fließwege: Vorlandabfluss ohne Überströmen der Ufer, Abfluss im nicht angebundenen Seitengerinne</li><li>Vorlandrauheit aus Literatur (Habersack 1995, HEC-RAS-Manual), weil Kalibrierdaten über bordvoll selten sind</li><li>Gerinne: k<sub>St</sub> = 21,1/d<sub>90</sub><sup>1/6</sup> aus der Sieblinie (→ Rechner oben)</li><li>Kalibrieren, bis der Wasserspiegel im Mittel ≤ 1 cm abweicht</li><li>Bei 1200 m³/s ist das Vorland geflutet. Eine MQ-Kalibrierung, die für HQ verwendet wird, kann stark verzerren</li></ul><span class="src">PU 3 · S. 3–9</span></div>
+    <div class="box"><span class="tag">PU 5</span><h4>Instationär (Mur, HQ Juli 1989)</h4>
+      <ul class="pts"><li>Oben Ganglinie Q(t) in 15-min-Werten (Pegel Spielfeld), unten Normal Depth 0,001, Anfangsabfluss 400 m³/s</li><li><b>Geometrie-Check:</b> Längs- und Querprofile, 3D-Ansicht; bei Mäandern ungleiche Reach Lengths; Rauheit, Levees und Ineffective Areas in interpolierten Profilen; alle Brücken; „abgeschnittene“ Vorländer</li><li>Rechen- und Ausgabeintervall 15 min; Warnungen genau prüfen</li></ul><span class="src">PU 5 · S. 1–5</span></div>
+  </div>
+
+  <div class="lab">
+    <div class="lab-head"><h4>PU 4: Strömung an einer Brücke (Lageplan) <span class="star">★★★</span></h4><span class="src">PU 4 · S. 4–6</span></div>
+    <div class="lab-plot" style="padding:16px"><svg viewBox="0 0 640 210" role="img" aria-label="Rückstauzone vor und Rezirkulationszone hinter einer Brücke">
+      <rect x="20" y="30" width="600" height="150" class="frame"/>
+      <rect x="150" y="30" width="110" height="52" fill="url(#hatch)"/><rect x="150" y="128" width="110" height="52" fill="url(#hatch)"/>
+      <rect x="380" y="30" width="110" height="52" fill="url(#hatch)"/><rect x="380" y="128" width="110" height="52" fill="url(#hatch)"/>
+      <rect x="288" y="30" width="64" height="52" class="solid" style="fill:var(--muted)"/><rect x="288" y="128" width="64" height="52" class="solid" style="fill:var(--muted)"/>
+      <rect x="317" y="98" width="6" height="14" class="solid"/>
+      <path class="wline" d="M30,55 C150,60 230,88 288,92 L352,92 C410,92 470,70 610,55"/>
+      <path class="wline" d="M30,105 L610,105"/>
+      <path class="wline" d="M30,155 C150,150 230,120 288,118 L352,118 C410,118 470,140 610,155"/>
+      <path class="ink" d="M430,60 a14,10 0 1,1 -1,0" style="stroke:var(--sed)"/><path class="ink" d="M430,150 a14,10 0 1,0 -1,0" style="stroke:var(--sed)"/>
+      <line class="ref" x1="80" y1="22" x2="80" y2="188"/><line class="ref" x1="260" y1="22" x2="260" y2="188"/><line class="ref" x1="380" y1="22" x2="380" y2="188"/><line class="ref" x1="560" y1="22" x2="560" y2="188"/>
+      <text class="tick" x="66" y="16">5.85</text><text class="tick" x="246" y="16">5.76</text><text class="tick" x="366" y="16">5.63</text><text class="tick" x="546" y="16">5.50</text>
+      <text class="lbl-s" x="296" y="200">Brücke</text>
+      <text class="lbl" x="120" y="200">Rückstau / Kontraktion</text><text class="lbl" x="420" y="200">Rezirkulation / Expansion</text>
+      <path class="ink" d="M36,96 l20,0 m-6,-4 l6,4 l-6,4"/>
+    </svg></div>
+    <div style="padding:0 16px 16px"><ul class="pts">
+      <li>Brückenansätze: Low Flow, Low Flow + Weir, Pressure Flow (Orifice/Sluice Gate), Pressure + Weir, Energy only</li>
+      <li>Ineffective Flow Areas in den Profilen direkt vor und hinter der Brücke (schraffiert)</li>
+      <li>Kontraktionsbeiwert <b>0,3</b>, Expansionsbeiwert <b>0,5</b> an den angrenzenden Profilen (lt. HEC-RAS-Manual)</li>
+      <li>Hochwasser (bis 1500 m³/s) wird zunächst „unter der Brücke durchgezwängt“. Erst mit der Einstellung <b>„Pressure and/or Weir“</b> wird die Brücke korrekt überströmt</li>
+      <li>Unter der Brücke steigt v; unterstrom fällt die Energielinie ab, weil in den Rezirkulationszonen Energie dissipiert wird</li>
+    </ul></div>
+  </div>
+
+  <div class="cols">
+    <div class="box"><span class="tag">RSim-2D · Raab</span><h4>Übung 1 und 2 (keine schriftliche Angabe)</h4>
+      <p>Laut Kursplan: 2D-Netz für einen natürlichen Abschnitt erzeugen, Rauheit und Randbedingungen eingeben, stationär rechnen; danach in Gruppenarbeit ein instationäres Modell mit Hochwasserwelle (<code>Floodwave.txt</code>), Postprocessing, Vergleich.</p>
+      <p>Theorie: Dreiecke, FEM, Smagorinsky, Strickler-Rauheit (tiefenabhängig), Q oben und h unten.</p><span class="src">1.1 · S. 8 · 3.1 · S. 10</span></div>
+    <div class="box"><span class="tag">RSim-3D · Mäander mit Sohlschwelle</span><h4>Practical Unit 3D</h4>
+      <ul class="pts"><li>HQ1: Q = <b>85 m³/s</b>, H = 292,2 m ü. A.</li><li>Rauheit <b>nach Nikuradse</b> (absolut): Fluss 5 cm, Ufer + Vegetation 50 cm, Schwelle 20 cm</li><li>6 vertikale Schichten, Punktabstand 3 m</li><li>Aufgabe 2: Schwelle entfernen, mit H = 288,5 m ü. A. neu rechnen und vergleichen</li><li>Theorie: FVM, Polyeder, k-ε, Sekundärströmung</li></ul><span class="src">Practical Unit 3D (meander3d.zip)</span></div>
+  </div>
+</section>
+
+<!-- ============ FORMELBLATT ============ -->
+<section class="ch" id="formeln">
+  <div class="ch-head"><span class="unit">ZUM WIEDERHOLEN</span><h2>Formelblatt</h2></div>
+  <div class="tbl"><table>
+    <tr><th>Was</th><th>Formel</th><th>Quelle</th></tr>
+    <tr><td>Kontinuität</td><td class="m">Q = v·A = const; ∂Q/∂x + ∂A/∂t = 0</td><td class="src">1.2 · S. 10</td></tr>
+    <tr><td>Bernoulli mit Verlust</td><td class="m">z + p/ρg + v²/2g + h<sub>v</sub> = H<sub>0</sub></td><td class="src">1.2 · S. 12</td></tr>
+    <tr><td>Saint-Venant (Impuls)</td><td class="m">∂v/∂t + v∂v/∂x + g(∂h/∂x − I<sub>s</sub>) + gI<sub>E</sub> = 0</td><td class="src">1.2 · S. 13</td></tr>
+    <tr><td>Borda-Carnot</td><td class="m">ξ = c(1 − A<sub>2</sub>/A<sub>1</sub>)²</td><td class="src">1.2 · S. 15</td></tr>
+    <tr><td>α, β</td><td class="m">α ≈ 3β − 2; α 1,03–1,15; β 1,01–1,05</td><td class="src">1.2 · S. 16–17</td></tr>
+    <tr><td>Reynolds</td><td class="m">Re = v·R/ν, Re<sub>krit</sub> ≈ 600</td><td class="src">1.2 · S. 18</td></tr>
+    <tr><td>Strickler</td><td class="m">v = k<sub>St</sub>R<sup>2/3</sup>I<sup>1/2</sup>; n = 1/k<sub>St</sub>; k<sub>St</sub> = 21,1/d<sub>90</sub><sup>1/6</sup></td><td class="src">1.2 · S. 19; 2.2 · S. 12–13</td></tr>
+    <tr><td>Froude</td><td class="m">Fr = v/√(gh)</td><td class="src">1.2 · S. 21</td></tr>
+    <tr><td>Charakteristiken</td><td class="m">dx/dt = v ± √(gh)</td><td class="src">1.3 · S. 10</td></tr>
+    <tr><td>Spiegellinie</td><td class="m">dh/dx = (J<sub>s</sub> − J<sub>e</sub>)/(1 − αFr²)</td><td class="src">1.3 · S. 15</td></tr>
+    <tr><td>k-ε</td><td class="m">ν<sub>T</sub> = c<sub>μ</sub>k²/ε, c<sub>μ</sub> ≈ 0,09</td><td class="src">2.1 · S. 16</td></tr>
+    <tr><td>CFL (1D)</td><td class="m">Δt ≤ Δx/(u + c)</td><td class="src">2.1 · S. 44</td></tr>
+    <tr><td>Relaxation</td><td class="m">φ<sub>neu</sub> = αφ<sub>ber</sub> + (1 − α)φ<sub>alt</sub></td><td class="src">3.1 · S. 43</td></tr>
+    <tr><td>Shields</td><td class="m">τ = ρgIR; τ<sub>c</sub> = θ<sub>c</sub>(ρ<sub>s</sub> − ρ)gd</td><td class="src">4.1 · S. 9</td></tr>
+    <tr><td>Exner</td><td class="m">(1 − n<sub>p</sub>)∂z/∂t + ∇·q<sub>s</sub> = s<sub>dep</sub> − s<sub>ero</sub></td><td class="src">4.1 · S. 22</td></tr>
+  </table></div>
+</section>
+
+<!-- ============ QUIZ ============ -->
+<section class="ch" id="quiz">
+  <div class="ch-head"><span class="unit">SELBSTTEST</span><h2>Quiz</h2></div>
+  <p class="prose">Klick auf eine Antwort, dann erscheint die Erklärung mit Folienangabe. Dein Fortschritt wird nur in diesem Browser gespeichert.</p>
+  <div class="quiz-bar">
+    <div class="seg" id="q-filter" role="group" aria-label="Kapitel filtern"></div>
+    <div style="display:flex;gap:12px;align-items:center;flex-wrap:wrap">
+      <span class="score" id="q-score"></span><span class="meter"><i id="q-meter"></i></span>
+    </div>
+    <div style="display:flex;gap:8px;flex-wrap:wrap">
+      <button type="button" class="btn ghost" id="q-wrong" aria-pressed="false">Nur offene und falsche</button>
+      <button type="button" class="btn ghost" id="q-shuffle">Mischen</button>
+      <button type="button" class="btn" id="q-reset">Zurücksetzen</button>
+    </div>
+  </div>
+  <div class="qlist" id="q-list"></div>
+</section>
+
+<footer>Grundlage: Vorlesungsfolien 1.1–4.2 (English Course Material) und Übungsangaben HEC-RAS PU 1–5 sowie Practical Unit 3D, BOKU, WS 2026. Seitenangaben beziehen sich auf die Foliennummer im jeweiligen PDF.</footer>
+</main>
+
+<script>
+(function () {
+  const $ = (s, r = document) => r.querySelector(s);
+  const $$ = (s, r = document) => Array.from(r.querySelectorAll(s));
+  const fmt = (x, d = 2) => Number(x).toLocaleString('de-AT', { minimumFractionDigits: d, maximumFractionDigits: d });
+  const g = 9.81;
+
+  /* ---------- spezifische Energie ---------- */
+  function drawSE() {
+    const q = +$('#se-q').value, h = +$('#se-h').value;
+    $('#se-q-o').textContent = fmt(q, 1) + ' m²/s';
+    $('#se-h-o').textContent = fmt(h, 2) + ' m';
+    const hc = Math.cbrt(q * q / g), Emin = 1.5 * hc, E = h + q * q / (2 * g * h * h);
+    const v = q / h, Fr = v / Math.sqrt(g * h);
+    const W = 540, H = 360, L = 48, R = 16, T = 14, B = 46, hMax = 6, EMax = 8;
+    const X = e => L + e / EMax * (W - L - R), Y = y => H - B - y / hMax * (H - T - B);
+    let s = '';
+    for (let e = 0; e <= EMax; e += 1) s += `<line class="grid" x1="${X(e)}" y1="${Y(0)}" x2="${X(e)}" y2="${Y(hMax)}"/><text class="tick" x="${X(e)}" y="${H - B + 16}" text-anchor="middle">${e}</text>`;
+    for (let k = 0; k <= hMax; k += 1) s += `<line class="grid" x1="${X(0)}" y1="${Y(k)}" x2="${X(EMax)}" y2="${Y(k)}"/><text class="tick" x="${L - 8}" y="${Y(k) + 4}" text-anchor="end">${k}</text>`;
+    s += `<text class="lbl" x="${(L + W - R) / 2}" y="${H - 8}" text-anchor="middle">spezifische Energie H_E = h + v²/2g [m]</text>`;
+    s += `<text class="lbl" transform="translate(14 ${(T + H - B) / 2}) rotate(-90)" text-anchor="middle">Wassertiefe h [m]</text>`;
+    s += `<line class="ref" x1="${X(0)}" y1="${Y(0)}" x2="${X(hMax)}" y2="${Y(hMax)}"/><text class="tick" x="${X(5.2)}" y="${Y(5.6)}">H_E = h</text>`;
+    const pts = [];
+    for (let i = 0; i <= 500; i++) { const hh = 0.03 + i * (hMax - 0.03) / 500; const ee = hh + q * q / (2 * g * hh * hh); if (ee <= EMax) pts.push(X(ee).toFixed(1) + ',' + Y(hh).toFixed(1)); }
+    s += `<polyline class="curve" points="${pts.join(' ')}"/>`;
+    if (hc <= hMax && Emin <= EMax) {
+      s += `<line class="dash" x1="${X(0)}" y1="${Y(hc)}" x2="${X(EMax)}" y2="${Y(hc)}"/>`;
+      s += `<circle class="dot2" cx="${X(Emin)}" cy="${Y(hc)}" r="5"/><text class="lbl-s" x="${X(Emin) + 8}" y="${Y(hc) + 16}" style="fill:var(--sed)">Grenzzustand Fr = 1</text>`;
+      s += `<text class="tick" x="${X(EMax) - 6}" y="${Y(hc) - 6}" text-anchor="end">strömend, Fr &lt; 1</text><text class="tick" x="${X(EMax) - 6}" y="${Y(hc) + 14}" text-anchor="end">schießend, Fr &gt; 1</text>`;
+    }
+    if (E <= EMax) s += `<line class="ink" x1="${X(0)}" y1="${Y(h)}" x2="${X(E)}" y2="${Y(h)}" style="stroke-dasharray:2 3"/><circle class="dot" cx="${X(E)}" cy="${Y(h)}" r="6"/>`;
+    $('#se-svg').innerHTML = s;
+    const regime = Fr < 0.98 ? '<span class="pill info">strömend</span>' : Fr > 1.02 ? '<span class="pill no">schießend</span>' : '<span class="pill ok">kritisch</span>';
+    $('#se-out').innerHTML = `<div>Fließgeschwindigkeit v<b>${fmt(v)} m/s</b></div><div>H<sub>E</sub><b>${fmt(E)} m</b></div><div>Froude-Zahl Fr<b>${fmt(Fr)}</b></div><div>Grenztiefe h<sub>gr</sub><b>${fmt(hc)} m</b></div><div>H<sub>E,min</sub><b>${fmt(Emin)} m</b></div><div>Abflusszustand${regime}</div>` + (E > EMax ? '<p class="note">Punkt liegt außerhalb des Diagramms (H<sub>E</sub> &gt; 8 m).</p>' : '');
+  }
+  ['#se-q', '#se-h'].forEach(id => $(id).addEventListener('input', drawSE));
+  drawSE();
+
+  /* ---------- Wellentypen ---------- */
+  const waves = {
+    kin: { on: [0], t: 'Kinematische Welle: Trägheitsterme (∂v/∂t, ∂v/∂x) und Druckterm (∂h/∂x) entfallen, also I<sub>e</sub> = I<sub>s</sub>. Der Abfluss ist eine eindeutige Funktion des Wasserstands. Störungen laufen ungedämpft; die Wellengeschwindigkeit hängt nicht von der Froude-Zahl ab.' },
+    diff: { on: [0, 1], t: 'Diffusionswelle: Nur die Trägheitsterme entfallen. Zusammen mit der Kontinuität entsteht eine Art Diffusionsgleichung. Die Welle läuft stromab; die Dämpfung hängt von der Wellenlänge ab.' },
+    qs: { on: [0, 1, 2], t: 'Quasi-stationäre dynamische Welle: Nur die lokale Beschleunigung ∂v/∂t entfällt; stationär und ungleichförmig.' },
+    dyn: { on: [0, 1, 2, 3], t: 'Dynamische Welle: Das volle System wird numerisch gelöst (instationär, ungleichförmig). Bei Fr < 1 läuft die Primärwelle stromab und die Sekundärwelle stromauf, bei Fr > 1 laufen beide stromab. Die Dämpfung hängt von Froude-Zahl und Wellenlänge ab.' }
+  };
+  function setWave(k) {
+    $$('#lab-waves [data-w]').forEach(b => b.setAttribute('aria-pressed', b.dataset.w === k));
+    $$('#lab-waves .term').forEach(t => { const on = waves[k].on.includes(+t.dataset.t); t.classList.toggle('on', on); t.classList.toggle('off', !on); });
+    $('#wave-text').innerHTML = waves[k].t;
+  }
+  $$('#lab-waves [data-w]').forEach(b => b.addEventListener('click', () => setWave(b.dataset.w)));
+  setWave('dyn');
+
+  /* ---------- Gittertypen ---------- */
+  (function () {
+    let s = '';
+    const panel = (x0, title) => `<text class="lbl-s" x="${x0 + 90}" y="210" text-anchor="middle">${title}</text>`;
+    // structured
+    for (let i = 0; i <= 8; i++) s += `<line class="mesh" x1="${20 + i * 20}" y1="20" x2="${20 + i * 20}" y2="180"/>`;
+    for (let j = 0; j <= 8; j++) s += `<line class="mesh" x1="20" y1="${20 + j * 20}" x2="180" y2="${20 + j * 20}"/>`;
+    s += panel(10, 'strukturiert');
+    // multiblock
+    const bx = 230;
+    for (let i = 0; i <= 4; i++) s += `<line class="mesh" x1="${bx + i * 20}" y1="20" x2="${bx + i * 20}" y2="180"/>`;
+    for (let j = 0; j <= 8; j++) s += `<line class="mesh" x1="${bx}" y1="${20 + j * 20}" x2="${bx + 80}" y2="${20 + j * 20}"/>`;
+    for (let i = 0; i <= 8; i++) s += `<line class="mesh2" x1="${bx + 80 + i * 10}" y1="60" x2="${bx + 80 + i * 10}" y2="140"/>`;
+    for (let j = 0; j <= 8; j++) s += `<line class="mesh2" x1="${bx + 80}" y1="${60 + j * 10}" x2="${bx + 160}" y2="${60 + j * 10}"/>`;
+    s += `<line class="eline" x1="${bx + 80}" y1="20" x2="${bx + 80}" y2="180" style="stroke-dasharray:4 3"/>`;
+    s += panel(220, 'Multiblock');
+    // unstructured: jittered points, quads split to triangles alternately
+    const ux = 450, n = 6, P = [];
+    let seed = 7; const rnd = () => { seed = (seed * 16807) % 2147483647; return seed / 2147483647; };
+    for (let j = 0; j <= n; j++) { P[j] = []; for (let i = 0; i <= n; i++) { const edge = i === 0 || j === 0 || i === n || j === n; P[j][i] = [ux + i * (160 / n) + (edge ? 0 : (rnd() - 0.5) * 16), 20 + j * (160 / n) + (edge ? 0 : (rnd() - 0.5) * 16)]; } }
+    const tri = (a, b, c) => `<polygon class="mesh" points="${a.join(',')} ${b.join(',')} ${c.join(',')}"/>`;
+    for (let j = 0; j < n; j++) for (let i = 0; i < n; i++) {
+      const a = P[j][i], b = P[j][i + 1], c = P[j + 1][i + 1], d = P[j + 1][i];
+      if ((i + j) % 2) { s += tri(a, b, c) + tri(a, c, d); } else { s += tri(a, b, d) + tri(b, c, d); }
+    }
+    s += panel(440, 'unstrukturiert');
+    $('#grid-svg').innerHTML = s;
+  })();
+
+  /* ---------- Wärmeleitung explizit / implizit ---------- */
+  function heat(r, tEnd, implicit) {
+    const N = 20, dx = 1 / N, dt = r * dx * dx;
+    const steps = Math.max(1, Math.round(tEnd / dt));
+    let T = new Array(N + 1).fill(0), blown = false;
+    for (let n = 0; n < steps; n++) {
+      if (!implicit) {
+        const o = T.slice();
+        for (let i = 1; i < N; i++) T[i] = o[i] + r * (o[i - 1] - 2 * o[i] + o[i + 1]) + dt;
+        if (Math.abs(T[N >> 1]) > 1e6 || T.some(v => !isFinite(v) || Math.abs(v) > 1e6)) { blown = true; break; }
+      } else {
+        // Thomas algorithm: -r T[i-1] + (1+2r) T[i] - r T[i+1] = T_old[i] + dt
+        const m = N - 1, a = -r, b = 1 + 2 * r, c = -r, cp = new Array(m), dp = new Array(m);
+        for (let k = 0; k < m; k++) {
+          const d = T[k + 1] + dt;
+          if (k === 0) { cp[k] = c / b; dp[k] = d / b; }
+          else { const den = b - a * cp[k - 1]; cp[k] = c / den; dp[k] = (d - a * dp[k - 1]) / den; }
+        }
+        const x = new Array(m); x[m - 1] = dp[m - 1];
+        for (let k = m - 2; k >= 0; k--) x[k] = dp[k] - cp[k] * x[k + 1];
+        for (let k = 0; k < m; k++) T[k + 1] = x[k];
+      }
+    }
+    return { T, steps, dt, blown };
+  }
+  function drawHeat() {
+    const r = +$('#heat-r').value, t = +$('#heat-t').value;
+    $('#heat-r-o').textContent = fmt(r, 3);
+    $('#heat-t-o').textContent = fmt(t, 2);
+    const ex = heat(r, t, false), im = heat(r, t, true);
+    const W = 540, H = 320, L = 52, R = 16, T = 14, B = 42, y0 = -0.1, y1 = 0.2;
+    const X = x => L + x * (W - L - R), Y = y => H - B - (y - y0) / (y1 - y0) * (H - T - B);
+    const clampY = y => Math.max(y0 - 0.02, Math.min(y1 + 0.02, y));
+    let s = `<defs><clipPath id="hc"><rect x="${L}" y="${T}" width="${W - L - R}" height="${H - T - B}"/></clipPath></defs>`;
+    for (let k = 0; k <= 6; k++) { const yv = y0 + k * 0.05; s += `<line class="grid" x1="${L}" y1="${Y(yv)}" x2="${W - R}" y2="${Y(yv)}"/><text class="tick" x="${L - 6}" y="${Y(yv) + 4}" text-anchor="end">${fmt(yv, 2)}</text>`; }
+    for (let k = 0; k <= 5; k++) { const xv = k / 5; s += `<text class="tick" x="${X(xv)}" y="${H - B + 16}" text-anchor="middle">${fmt(xv, 1)}</text>`; }
+    s += `<line class="axis" x1="${L}" y1="${Y(0)}" x2="${W - R}" y2="${Y(0)}"/>`;
+    s += `<text class="lbl" x="${(L + W - R) / 2}" y="${H - 6}" text-anchor="middle">x</text><text class="lbl" transform="translate(14 ${(T + H - B) / 2}) rotate(-90)" text-anchor="middle">T</text>`;
+    const exact = []; for (let i = 0; i <= 100; i++) { const x = i / 100; exact.push(X(x).toFixed(1) + ',' + Y(x * (1 - x) / 2).toFixed(1)); }
+    s += `<polyline class="ref" points="${exact.join(' ')}" style="stroke-width:1.5"/>`;
+    const line = (arr, cls) => `<polyline class="${cls}" clip-path="url(#hc)" points="${arr.map((v, i) => X(i / 20).toFixed(1) + ',' + Y(clampY(v)).toFixed(1)).join(' ')}"/>`;
+    s += line(im.T, 'curve');
+    if (!ex.blown) s += line(ex.T, 'curve2');
+    s += `<rect x="${W - R - 168}" y="${T + 6}" width="160" height="44" rx="4" style="fill:var(--surface);stroke:var(--line)"/>`;
+    s += `<line class="curve" x1="${W - R - 158}" y1="${T + 20}" x2="${W - R - 136}" y2="${T + 20}"/><text class="lbl-s" x="${W - R - 130}" y="${T + 24}">implizit (Thomas)</text>`;
+    s += `<line class="curve2" x1="${W - R - 158}" y1="${T + 38}" x2="${W - R - 136}" y2="${T + 38}"/><text class="lbl-s" x="${W - R - 130}" y="${T + 42}">explizit</text>`;
+    $('#heat-svg').innerHTML = s;
+    const maxEx = ex.blown ? Infinity : Math.max(...ex.T.map(Math.abs));
+    const stable = r <= 0.5;
+    $('#heat-out').innerHTML = `<div>Δt<b>${ex.dt.toExponential(2).replace('.', ',')}</b></div><div>Zeitschritte<b>${ex.steps}</b></div>` +
+      `<div>max |T| explizit<b>${ex.blown ? '&gt; 10⁶' : fmt(maxEx, 3)}</b></div><div>max T implizit<b>${fmt(Math.max(...im.T), 3)}</b></div>` +
+      `<div>explizit${stable ? '<span class="pill ok">stabil</span>' : '<span class="pill no">instabil</span>'}</div>` +
+      (ex.blown ? '<p class="note">Die explizite Lösung ist explodiert und wird nicht mehr gezeichnet.</p>' : (!stable ? '<p class="note">Die Schwingung wächst mit jedem Schritt. Erhöhe t und schau zu.</p>' : ''));
+  }
+  ['#heat-r', '#heat-t'].forEach(id => $(id).addEventListener('input', drawHeat));
+  drawHeat();
+
+  /* ---------- CFL ---------- */
+  function cfl() {
+    const h = +$('#cfl-h').value, u = +$('#cfl-u').value, dx = +$('#cfl-dx').value, dt = +$('#cfl-dt').value;
+    const out = $('#cfl-out');
+    if (!(h > 0) || !(dx > 0) || !(dt > 0) || u < 0) { out.innerHTML = '<p class="note">Bitte positive Werte eingeben.</p>'; $('#cfl-bar').innerHTML = ''; return; }
+    const c = Math.sqrt(g * h), dtmax = dx / (u + c), Cr = dt * (u + c) / dx;
+    out.innerHTML = `<div>Wellengeschwindigkeit c = √(gh)<b>${fmt(c)} m/s</b></div><div>u + c<b>${fmt(u + c)} m/s</b></div><div>Δt<sub>max</sub><b>${fmt(dtmax, 1)} s</b></div><div>Courant-Zahl<b>${fmt(Cr)}</b></div><div>explizit${Cr <= 1 ? '<span class="pill ok">erfüllt</span>' : '<span class="pill no">verletzt</span>'}</div>`;
+    const W = 520, Hh = 64, max = Math.max(dt, dtmax) * 1.15, X = v => 10 + v / max * (W - 20);
+    $('#cfl-bar').innerHTML = `<svg viewBox="0 0 ${W} ${Hh}" role="img" aria-label="Vergleich Zeitschritt mit CFL-Grenze"><rect x="10" y="10" width="${X(dtmax) - 10}" height="16" rx="3" style="fill:var(--accent-soft);stroke:var(--accent)"/><text class="lbl-s" x="14" y="22">stabiler Bereich bis ${fmt(dtmax, 0)} s</text><line x1="${X(dt)}" y1="4" x2="${X(dt)}" y2="34" style="stroke:${Cr <= 1 ? 'var(--good)' : 'var(--bad)'};stroke-width:3"/><text class="lbl-s" x="${Math.min(X(dt), W - 120)}" y="52">gewählt: ${fmt(dt, 0)} s</text></svg>`;
+  }
+  ['#cfl-h', '#cfl-u', '#cfl-dx', '#cfl-dt'].forEach(id => $(id).addEventListener('input', cfl));
+  cfl();
+
+  /* ---------- Strickler ---------- */
+  let aCoef = 21.1;
+  function strickler() {
+    const d = +$('#ks-d').value, R = +$('#ks-r').value, I = +$('#ks-i').value;
+    $('#ks-d-o').textContent = d + ' mm'; $('#ks-r-o').textContent = fmt(R, 1) + ' m'; $('#ks-i-o').textContent = fmt(I, 1) + ' ‰';
+    const k = aCoef / Math.pow(d / 1000, 1 / 6), n = 1 / k, v = k * Math.pow(R, 2 / 3) * Math.sqrt(I / 1000);
+    const W = 540, H = 300, L = 48, Rr = 16, T = 14, B = 42, dMax = 300, kMin = 15, kMax = 60;
+    const X = x => L + x / dMax * (W - L - Rr), Y = y => H - B - (y - kMin) / (kMax - kMin) * (H - T - B);
+    let s = '';
+    for (let y = kMin; y <= kMax; y += 5) s += `<line class="grid" x1="${L}" y1="${Y(y)}" x2="${W - Rr}" y2="${Y(y)}"/><text class="tick" x="${L - 6}" y="${Y(y) + 4}" text-anchor="end">${y}</text>`;
+    for (let x = 0; x <= dMax; x += 50) s += `<text class="tick" x="${X(x)}" y="${H - B + 16}" text-anchor="middle">${x}</text>`;
+    s += `<text class="lbl" x="${(L + W - Rr) / 2}" y="${H - 6}" text-anchor="middle">d90 [mm]</text><text class="lbl" transform="translate(14 ${(T + H - B) / 2}) rotate(-90)" text-anchor="middle">k_St [m^(1/3)/s]</text>`;
+    [[21.1, 'curve'], [26, 'curve2']].forEach(([a, cls]) => {
+      const p = []; for (let x = 2; x <= dMax; x += 2) { const kk = a / Math.pow(x / 1000, 1 / 6); if (kk <= kMax && kk >= kMin) p.push(X(x).toFixed(1) + ',' + Y(kk).toFixed(1)); }
+      s += `<polyline class="${cls}" points="${p.join(' ')}" style="opacity:${a === aCoef ? 1 : 0.35}"/>`;
+    });
+    if (k <= kMax && k >= kMin) s += `<circle class="${aCoef === 26 ? 'dot2' : 'dot'}" cx="${X(d)}" cy="${Y(k)}" r="6"/>`;
+    s += `<text class="lbl-s" x="${W - Rr - 4}" y="${Y(21.1 / Math.pow(0.3, 1 / 6)) - 8}" text-anchor="end" style="fill:var(--accent)">a = 21,1</text><text class="lbl-s" x="${W - Rr - 4}" y="${Y(26 / Math.pow(0.3, 1 / 6)) - 8}" text-anchor="end" style="fill:var(--sed)">a = 26</text>`;
+    $('#ks-svg').innerHTML = s;
+    $('#ks-out').innerHTML = `<div>k<sub>St</sub><b>${fmt(k, 1)} m<sup>1/3</sup>/s</b></div><div>Manning n<b>${fmt(n, 4)} s/m<sup>1/3</sup></b></div><div>v = k<sub>St</sub>R<sup>2/3</sup>I<sup>1/2</sup><b>${fmt(v)} m/s</b></div><div>spezifischer Abfluss v·R (breites Gerinne)<b>${fmt(v * R)} m²/s</b></div>`;
+  }
+  $$('#lab-strickler [data-a]').forEach(b => b.addEventListener('click', () => { aCoef = +b.dataset.a; $$('#lab-strickler [data-a]').forEach(x => x.setAttribute('aria-pressed', x === b)); strickler(); }));
+  ['#ks-d', '#ks-r', '#ks-i'].forEach(id => $(id).addEventListener('input', strickler));
+  strickler();
+
+  /* ---------- Shields ---------- */
+  function shields() {
+    const I = +$('#sh-i').value / 1000, R = +$('#sh-r').value, d = +$('#sh-d').value / 1000, tc = +$('#sh-t').value;
+    $('#sh-i-o').textContent = fmt(I * 1000, 2) + ' ‰'; $('#sh-r-o').textContent = fmt(R, 1) + ' m'; $('#sh-d-o').textContent = fmt(d * 1000, 0) + ' mm'; $('#sh-t-o').textContent = fmt(tc, 3);
+    const rho = 1000, rhos = 2650, tau = rho * g * I * R, tauc = tc * (rhos - rho) * g * d, theta = tau / ((rhos - rho) * g * d), dcrit = tau / (tc * (rhos - rho) * g);
+    const moves = tau > tauc;
+    $('#sh-out').innerHTML = `<div>τ (Sohlschubspannung)<b>${fmt(tau, 1)} N/m²</b></div><div>τ<sub>c</sub> (kritisch)<b>${fmt(tauc, 1)} N/m²</b></div><div>θ<b>${fmt(theta, 3)}</b></div><div>größtes bewegtes Korn<b>${fmt(dcrit * 1000, 0)} mm</b></div><div>Korn d${moves ? '<span class="pill no">in Bewegung</span>' : '<span class="pill ok">in Ruhe</span>'}</div>`;
+    const W = 520, Hh = 70, max = Math.max(tau, tauc) * 1.2, X = v => 10 + v / max * (W - 20);
+    $('#sh-bar').innerHTML = `<svg viewBox="0 0 ${W} ${Hh}" role="img" aria-label="Sohlschubspannung gegen kritische Schubspannung"><rect x="10" y="8" width="${Math.max(2, X(tau) - 10)}" height="18" rx="3" style="fill:var(--accent)"/><text class="lbl-s" x="14" y="42">τ = ${fmt(tau, 1)} N/m²</text><line x1="${X(tauc)}" y1="2" x2="${X(tauc)}" y2="32" style="stroke:var(--sed);stroke-width:3"/><text class="lbl-s" x="${Math.min(X(tauc), W - 110)}" y="62" style="fill:var(--sed)">τ_c = ${fmt(tauc, 1)} N/m²</text></svg>`;
+  }
+  ['#sh-i', '#sh-r', '#sh-d', '#sh-t'].forEach(id => $(id).addEventListener('input', shields));
+  shields();
+
+  /* ---------- Quiz ---------- */
+  const Q = [
+    { k: '1', q: 'Wann ist ein 3D-Modell einem 2D-Modell klar vorzuziehen?', a: ['Bei der Überflutung großer Vorlandflächen', 'Bei Sekundärströmungen in Flusskrümmungen und der Umströmung von Brückenpfeilern', 'Bei langen, geraden Gerinnen mit gleichbleibendem Querschnitt', 'Bei Rohrnetzen'], c: 1, e: '3D, wenn horizontale und vertikale Geschwindigkeiten wichtig sind: Sekundärströmung in Krümmungen, Grundablass bei Spülung, Umströmung von Bauwerken. Vorlandüberflutung ist der klassische 2D-Fall.', s: '1.1 · S. 13–14' },
+    { k: '1', q: 'Was bedeutet (v·∇)v = 0?', a: ['stationäre Strömung', 'gleichförmige Strömung', 'reibungsfreie Strömung', 'kritischer Abfluss'], c: 1, e: 'Die konvektive Beschleunigung ist null bei gleichförmiger (uniform) Strömung. ∂v/∂t = 0 hieße stationär.', s: '1.2 · S. 6' },
+    { k: '1', q: 'Unter welcher Bedingung sind Stromlinie, Bahnlinie und Streichlinie identisch?', a: ['bei laminarer Strömung', 'bei stationärer Strömung', 'bei schießendem Abfluss', 'nie'], c: 1, e: 'Bei stationärer Strömung fallen alle drei Linien zusammen.', s: '1.2 · S. 7' },
+    { k: '1', q: 'Welche Annahme gehört NICHT zu den Voraussetzungen der Saint-Venant-Gleichungen?', a: ['inkompressibles Medium', 'hydrostatische Druckverteilung', 'Geschwindigkeit über den Querschnitt konstant', 'stark gekrümmte Stromfäden'], c: 3, e: 'Verlangt wird das Gegenteil: Die Stromfadenkrümmung muss vernachlässigbar sein, damit der Druck hydrostatisch ist. Dazu kommen kleines Wasserspiegelgefälle und Inkompressibilität.', s: '1.2 · S. 13' },
+    { k: '1', q: 'Warum reagiert α empfindlicher auf eine ungleichmäßige Geschwindigkeitsverteilung als β?', a: ['weil α nur für schießenden Abfluss gilt', 'weil v bei α in dritter, bei β nur in zweiter Potenz eingeht', 'weil β die Reibung enthält', 'weil α immer kleiner als 1 ist'], c: 1, e: 'α = ∫v³dA/(v̄³A), β = ∫v²dA/(v̄²A); näherungsweise α ≈ 3β − 2. Im offenen Gerinne ist α = 1,03–1,15 und β = 1,01–1,05.', s: '1.2 · S. 16–17' },
+    { k: '1', q: 'Was gibt die Froude-Zahl an?', a: ['Verhältnis von Trägheit zu Viskosität', 'Verhältnis von Fließgeschwindigkeit zu Ausbreitungsgeschwindigkeit von Störungen √(gh)', 'Verhältnis von Sohl- zu Energiegefälle', 'Rauheit relativ zur Wassertiefe'], c: 1, e: 'Fr = v/√(gh). Bei Fr < 1 ist der Abfluss strömend, bei Fr > 1 schießend. Trägheit zu Viskosität wäre die Reynoldszahl.', s: '1.2 · S. 21' },
+    { k: '1', q: 'Borda-Carnot: In welchem Bereich liegt der Korrekturbeiwert c bei plötzlicher Erweiterung?', a: ['0,4–0,5', '1,0–1,2', '0,03–0,05', '1,5–2,0'], c: 1, e: 'c = 1,0–1,2 bei plötzlicher Erweiterung, 0,4–0,5 bei plötzlicher Verengung.', s: '1.2 · S. 15' },
+    { k: '1', q: 'Welche Terme vernachlässigt die kinematische Welle?', a: ['nur ∂v/∂t', 'Trägheitsterme und den Druckterm ∂h/∂x', 'nur die Reibung', 'gar keine'], c: 1, e: 'Kinematische Welle: ∂v/∂t, ∂v/∂x und ∂h/∂x entfallen, also I_e = I_s. Q ist eindeutig vom Wasserstand abhängig, die Welle läuft ungedämpft.', s: '1.3 · S. 5' },
+    { k: '1', q: 'Was unterscheidet die Diffusionswelle von der kinematischen Welle?', a: ['Bei der Diffusionswelle bleibt der Druckterm ∂h/∂x erhalten, deshalb wird sie gedämpft', 'Die Diffusionswelle vernachlässigt die Reibung', 'Die Diffusionswelle läuft stromauf', 'Kein Unterschied'], c: 0, e: 'Die Diffusionswelle vernachlässigt nur die Trägheitsterme. Mit der Kontinuität entsteht eine Diffusionsgleichung, deren Dämpfung von der Wellenlänge abhängt.', s: '1.3 · S. 6' },
+    { k: '1', q: 'Dynamische Welle bei Fr < 1: Wie laufen Primär- und Sekundärwelle?', a: ['beide stromab', 'beide stromauf', 'Primärwelle stromab, Sekundärwelle stromauf', 'Primärwelle stromauf, Sekundärwelle stromab'], c: 2, e: 'Bei Fr < 1 läuft die Primärwelle stromab und die Sekundärwelle stromauf. Bei Fr > 1 laufen beide in dieselbe Richtung.', s: '1.3 · S. 6' },
+    { k: '1', q: 'Wie lauten die Charakteristiken der Saint-Venant-Gleichungen?', a: ['dx/dt = v ± √(gh)', 'dx/dt = √(gh)', 'dx/dt = v·I_s', 'dh/dx = (J_s − J_e)/(1 − Fr²)'], c: 0, e: 'C⁺: dx/dt = v + c, C⁻: dx/dt = v − c mit c = √(gh). Das letzte ist die DGL der Spiegellinie.', s: '1.3 · S. 10' },
+    { k: '1', q: 'Wofür eignet sich das Charakteristikenverfahren besonders, und wo wird es heute meist eingesetzt?', a: ['Für stationäre Spiegellinien; in Tabellenkalkulationen', 'Für Unstetigkeiten wie Dammbruchwellen; heute vor allem an Zellgrenzen von 2D-FV-Modellen', 'Für Sedimenttransport; in HEC-6', 'Für Turbulenz; in LES-Modellen'], c: 1, e: 'Vorteil: gute Physik, gut bei Unstetigkeiten (Damm- oder Deichbruch). Nachteil: großer Rechenaufwand. Heute vor allem in 2D-Finite-Volumen-Modellen an den Zellgrenzen.', s: '1.3 · S. 12' },
+    { k: '1', q: 'Was braucht ein 1D-Modell am unteren Modellrand?', a: ['eine Abflussganglinie', 'Wasserspiegel, Schlüsselkurve oder Energiegefälle', 'die Sieblinie', 'die Turbulenzintensität'], c: 1, e: 'Oben wird der Abfluss vorgegeben, unten Wasserspiegel, Schlüsselkurve oder Energiegefälle.', s: '1.3 · S. 28' },
+    { k: '2', q: 'Wie viele Gleichungen und wie viele Unbekannte hat RANS ohne Turbulenzmodell?', a: ['4 Gleichungen, 4 Unbekannte', '4 Gleichungen, 5 Unbekannte', '6 Gleichungen, 6 Unbekannte', '3 Gleichungen, 5 Unbekannte'], c: 1, e: 'Es gibt 3 Navier-Stokes-Gleichungen und die Kontinuität. Unbekannt sind u, v, w, p und die Reynoldsspannung bzw. ν_T. Daher das Schließungsproblem. Mit k-ε sind es 6 Gleichungen für 6 Unbekannte.', s: '2.1 · S. 13, 16' },
+    { k: '2', q: 'Was ist die Wirbelviskosität ν_T?', a: ['eine Stoffeigenschaft des Wassers wie ν', 'eine Eigenschaft der Strömung, abhängig von der Art der Turbulenz', 'eine Naturkonstante ≈ 0,41', 'die Dissipationsrate'], c: 1, e: 'Im Gegensatz zur molekularen Viskosität ν ist ν_T keine Fluideigenschaft, sondern eine Eigenschaft der Strömung (Boussinesq).', s: '2.1 · S. 12' },
+    { k: '2', q: 'Wie berechnet das k-ε-Modell die Wirbelviskosität?', a: ['ν_T = l_m²·|∂u/∂y|', 'ν_T = c_μ·k²/ε mit c_μ ≈ 0,09', 'ν_T = κ·u*·y', 'ν_T = ε/k'], c: 1, e: 'Kolmogorov-Prandtl: ν_T = c_μ·k²/ε, c_μ ≈ 0,09. Die erste Formel ist der Mischungsweg nach Prandtl.', s: '2.1 · S. 16' },
+    { k: '2', q: 'Warum ist DNS für Flüsse praktisch nicht einsetzbar?', a: ['Sie kann keine freie Oberfläche abbilden', 'Die kleinsten Wirbel brauchen mindestens etwa 10⁹ Rechenknoten', 'Sie ist nur für laminare Strömung gültig', 'Sie braucht ein Turbulenzmodell'], c: 1, e: 'Die kleinsten Wirbel liegen bei ca. 10⁻³ × Gebietsgröße, was mindestens 10⁹ Knoten bedeutet. Außerdem liefert DNS statistische Information, deren Interpretation schwierig ist.', s: '2.1 · S. 10' },
+    { k: '2', q: 'Was macht LES?', a: ['Sie mittelt alle Schwankungen zeitlich', 'Sie löst Wirbel in Gittergröße auf und modelliert die kleineren (Subgrid)', 'Sie löst nur die Kontinuitätsgleichung', 'Sie ist ein 1D-Verfahren'], c: 1, e: 'Grid-Scale-Bewegungen werden aufgelöst, Subgrid-Scale-Bewegungen über zusätzliche Gleichungen modelliert. Die Idee stammt aus der Meteorologie.', s: '2.1 · S. 10' },
+    { k: '2', q: 'Warum ist die Finite-Volumen-Methode konservativ?', a: ['weil sie Taylorreihen verwendet', 'weil die Erhaltungsgröße in jeder Zelle bilanziert wird (Integralform)', 'weil sie nur auf strukturierten Gittern arbeitet', 'weil sie implizit ist'], c: 1, e: 'Die FV-Methode integriert über das Kontrollvolumen. Damit sind Masse, Impuls und Energie automatisch erhalten, und es entstehen auch bei groben Gittern keine unphysikalischen Ergebnisse.', s: '2.1 · S. 33' },
+    { k: '2', q: 'Welche Formulierung verwendet die Finite-Elemente-Methode?', a: ['Differentialform', 'Integralform', 'schwache Integralform (gewichtete Residuen)', 'Charakteristikenform'], c: 2, e: 'FD verwendet die Differentialform, FV die Integralform und FE die schwache Integralform.', s: '2.1 · S. 25, 38' },
+    { k: '2', q: 'FD auf die 1D-Poisson-Gleichung angewendet: Welche Matrix entsteht, und wie löst man sie?', a: ['vollbesetzt, Gauß-Elimination', 'tridiagonal, Thomas-Algorithmus', 'diagonal, direkte Division', 'pentadiagonal, SIMPLE'], c: 1, e: 'Es entsteht eine Hauptdiagonale mit zwei Nebendiagonalen. Der Thomas-Algorithmus löst sie sehr schnell.', s: '2.1 · S. 30' },
+    { k: '2', q: 'Was ist das Problem des zentralen Differenzenschemas (CDS) bei dominanter Konvektion?', a: ['es ist zu diffusiv', 'die stromab liegende Zelle beeinflusst das Ergebnis, was der Physik widerspricht', 'es braucht unstrukturierte Gitter', 'es ist nicht konsistent'], c: 1, e: 'Bei CDS gehen beide Nachbarn gleich ein. Wenn die Konvektion dominiert, wirkt so die Information von stromab, was unphysikalisch ist. Upwind (UDS) nimmt den Wert von stromauf.', s: '2.1 · S. 36–37' },
+    { k: '2', q: 'Hochwasser, h = 5 m, u = 2 m/s, Profile alle 1000 m. Welchen Zeitschritt erlaubt das CFL-Kriterium höchstens?', a: ['ca. 500 s', 'ca. 111 s', 'ca. 15 min', 'ca. 10 s'], c: 1, e: 'c = √(9,81·5) ≈ 7 m/s, Δt ≤ Δx/(u + c) = 1000/9 ≈ 111 s, also unter 2 min. Für die Welle würden 15–30 min reichen, explizite Verfahren rechnen hier also unnötig aufwendig.', s: '2.1 · S. 43–44' },
+    { k: '2', q: 'Welche Aussage über implizite Verfahren stimmt?', a: ['Sie brauchen keinen Gleichungslöser', 'Sie sind unbedingt stabil, aber nur iterativ lösbar', 'Sie müssen das CFL-Kriterium einhalten', 'Sie verwenden nur Werte des alten Zeitschritts'], c: 1, e: 'Implizit ist unbedingt stabil. Der Nachteil ist ein komplexes Gleichungssystem, das einen Löser oder Iteration braucht.', s: '2.1 · S. 45' },
+    { k: '2', q: 'Konvergenz ergibt sich aus …', a: ['Konservativität + Beschränktheit', 'Konsistenz + Stabilität', 'Stabilität + Relaxation', 'Konsistenz + Konservativität'], c: 1, e: 'Konsistenz (Diskretisierungsfehler → 0) plus Stabilität (Lösungsfehler beschränkt) ergibt Konvergenz.', s: '2.1 · S. 48' },
+    { k: '2', q: 'Welche Gitter-Faustregel steht so in den Folien?', a: ['Dreiecke sind für CFD besser als Vierecke', 'Flächenverhältnis benachbarter Zellen max. 1:2, Winkel immer > 10°', 'Seitenverhältnis mindestens 1:50', 'Das Gitter soll quer zur Strömung liegen'], c: 1, e: 'Vierecke sind besser als Dreiecke, das Seitenverhältnis nie kleiner als 1:10, das Flächenverhältnis max. 1:2, Winkel > 10°, und das Gitter soll an der Strömung ausgerichtet sein.', s: '2.1 · S. 50' },
+    { k: '2', q: 'Was ist eine Dirichlet-Randbedingung?', a: ['Die Ableitung am Rand ist null', 'Der Wert der Variablen am Rand ist vorgegeben', 'Der Rand ist undurchlässig', 'Am Rand gilt Fr = 1'], c: 1, e: 'Dirichlet gibt den Wert vor (z. B. oben Q bekannt). Zero Gradient setzt die Ableitung auf null (z. B. unten v konstant).', s: '2.1 · S. 50' },
+    { k: '2', q: 'Aus welchen Anteilen setzt sich der Fließwiderstand zusammen?', a: ['Kornrauheit, Formrauheit, Interaktion in gegliederten Querschnitten', 'Reibung, Turbulenz, Viskosität', 'nur Kornrauheit', 'Sohlgefälle und Wassertiefe'], c: 0, e: 'Kornrauheit (Oberflächenreibung), Formrauheit (Sohlformen, Unregelmäßigkeiten) und Austauschprozesse in gegliederten Querschnitten mit Vorlandabfluss.', s: '2.2 · S. 5' },
+    { k: '2', q: 'd₉₀ = 64 mm, Strickler-Ansatz a = 21,1. Wie groß ist k_St ungefähr?', a: ['ca. 21 m^(1/3)/s', 'ca. 33 m^(1/3)/s', 'ca. 52 m^(1/3)/s', 'ca. 10 m^(1/3)/s'], c: 1, e: 'k_St = 21,1/0,064^(1/6) = 21,1/0,632 ≈ 33 m^(1/3)/s, und n = 1/k_St ≈ 0,030.', s: '2.2 · S. 12–13 · PU 3 · S. 4' },
+    { k: '2', q: 'Welche Aussage ist KEINE Grenze der Strickler-Formel?', a: ['Viskosität wird nicht berücksichtigt', 'k_St ist nicht dimensionslos', 'Sie gilt nur für hydraulisch glatte Verhältnisse', 'gegliederte Querschnitte und Sohlformen werden nicht berücksichtigt'], c: 2, e: 'Umgekehrt: Strickler gilt nur für hydraulisch raue Verhältnisse, weil die Viskosität fehlt.', s: '2.2 · S. 14' },
+    { k: '2', q: 'Warum braucht man getrennte Modelle für Nieder-, Mittel- und Hochwasser?', a: ['weil sich die Geometrie ändert', 'weil der Strickler-Beiwert von der Wassertiefe abhängt', 'weil HEC-RAS nur einen Abfluss rechnen kann', 'wegen des CFL-Kriteriums'], c: 1, e: 'k_St ist tiefenabhängig (relative Rauheit). Ein bei MQ kalibrierter Wert kann bei HQ stark verzerren.', s: '2.2 · S. 20 · PU 3 · S. 9' },
+    { k: '2', q: 'Welche Genauigkeit des Wasserspiegels wird bei der Kalibrierung üblicherweise verlangt?', a: ['1 mm', '1 cm', '10 cm', '0,5 m'], c: 1, e: 'Üblich ist 1 cm, in PU 3 als mittlere Abweichung von höchstens 1 cm.', s: '2.2 · S. 20' },
+    { k: '2', q: 'Vegetation, deren Höhe mindestens der Wassertiefe entspricht und die durchströmt wird, ist …', a: ['niedrige Vegetation, wie Wandrauheit behandelt', 'mittlere Vegetation', 'hohe Vegetation, beschrieben über a_x, a_y und d_p', 'keine Vegetation im Sinne des DVWK'], c: 2, e: 'Hohe Vegetation wird über die Abstände a_x, a_y und den Durchmesser d_p beschrieben, z. B. mit den Verfahren nach Pasche oder Mertens.', s: '2.2 · S. 21–22' },
+    { k: '3', q: 'Wie viele Differentialgleichungen löst ein 3D-RANS-Modell mit k-ε?', a: ['2 + 1', '3 Impuls + 2 Turbulenz + 1 Kontinuität', '3 Impuls + 1 Kontinuität', '1 Saint-Venant'], c: 1, e: '3D: 3 Impulsgleichungen, 2 Turbulenzgleichungen, 1 Kontinuität, nicht hydrostatisch. 2D: 2 Impulsgleichungen + 1 Kontinuität, hydrostatisch.', s: '3.1 · S. 7' },
+    { k: '3', q: 'Welche Kombination beschreibt RSim-2D?', a: ['Polyeder, FVM, k-ε', 'Dreiecke, FEM, Smagorinsky', 'Rechtecke, FDM, Mischungsweg', 'Querprofile, Standard-Step'], c: 1, e: 'RSim-2D: Dreiecksnetz, Finite Elemente, Smagorinsky. RSim-3D: Polyeder (meist hexagonal), Finite Volumen, Standard-k-ε.', s: '3.1 · S. 10–11' },
+    { k: '3', q: 'Warum wird in 3D-Modellen oft die absolute Rauheit k_s statt k_St verwendet?', a: ['weil 3D-Modelle keine Rauheit brauchen', 'weil k_s ≈ D₉₀ nicht tiefenabhängig ist', 'weil k_St in 3D nicht definiert ist', 'wegen der hydrostatischen Annahme'], c: 1, e: 'Die absolute Rauheit (äquivalente Sandrauheit nach Nikuradse ≈ D₉₀) beseitigt das Problem tiefenabhängiger Rauheitswerte.', s: '3.1 · S. 23' },
+    { k: '3', q: 'Was bewirken Relaxationsfaktoren in 3D-Modellen?', a: ['Sie ändern die Endlösung', 'Sie dämpfen Instabilitäten und beeinflussen die Rechengeschwindigkeit, nicht aber die Endlösung', 'Sie ersetzen das Turbulenzmodell', 'Sie verfeinern das Gitter'], c: 1, e: 'φ_neu = α·φ_berechnet + (1 − α)·φ_alt. Die Faktoren sind inert in Bezug auf die Endlösung, haben aber großen Einfluss auf die Rechengeschwindigkeit.', s: '3.1 · S. 43' },
+    { k: '3', q: 'Wo ist die hydrostatische Druckannahme ungültig?', a: ['in geraden, gleichförmigen Strecken', 'bei stark gekrümmten Stromlinien (konvex oder konkav)', 'bei kleinen Wassertiefen', 'immer im Vorland'], c: 1, e: 'Bei konvexen Stromfäden sinkt der Druck, bei konkaven steigt er. Dort gilt die Lösung eines hydrostatischen Modells nicht.', s: '3.1 · S. 41' },
+    { k: '3', q: 'Hochwasser 2002 (Kamp/Donau): Was ergab der Sensitivitätstest der Vorlandrauheit?', a: ['Sie bestimmt die Überflutungsfläche maßgeblich', 'Sie hat kaum Einfluss auf Größe und Form der Überflutungsfläche', 'Das Modell wurde instabil', 'Sie war nicht testbar'], c: 1, e: 'Die Vorlandrauheit beeinflusste die Überflutungsfläche kaum. Abweichungen kamen von falschen Dammkronen, Sandsäcken und einer gezielten Dammöffnung.', s: '3.2 · S. 22, 30' },
+    { k: '3', q: 'Welche Daten braucht man zur Kalibrierung von 2D- und 3D-Modellen?', a: ['nur Niederschlagsdaten', 'ADV/ADCP-Geschwindigkeiten und Wasserspiegelmessungen', 'nur die Sieblinie', 'Luftbilder genügen'], c: 1, e: 'Zur Kalibrierung dienen Geschwindigkeitsmessungen (ADV, ADCP) und Wasserspiegel. Ideal sind zusätzlich D₅₀, D₉₀ und hochfrequente Messungen über 32 Hz.', s: '3.1 · S. 9' },
+    { k: '4', q: 'Was kennzeichnet die „Known-Discharge“-Methode?', a: ['Alle Variablen werden gleichzeitig gelöst', 'Der Abfluss bleibt während eines Zeitschritts konstant; gelöst werden nur Sedimentkontinuität und stationäre Spiegellinie', 'Sediment wird ignoriert', 'Der Abfluss wird aus dem Sediment berechnet'], c: 1, e: 'Daneben gibt es ungekoppelt (nacheinander) und gekoppelt (alles gleichzeitig).', s: '4.1 · S. 6' },
+    { k: '4', q: 'Wie berechnet man die Sohlschubspannung im 1D-Fall?', a: ['τ = ρ·g·I·R_h', 'τ = θ_c·(ρ_s − ρ)·g·d', 'τ = ρ·v²', 'τ = μ·∂u/∂y'], c: 0, e: 'τ = ρgIR_h. Die zweite Formel ist die kritische Schubspannung nach Shields. Bewegung beginnt bei θ = θ_c.', s: '4.1 · S. 9' },
+    { k: '4', q: 'Warum ist das Hjulström-Diagramm für die Praxis unbefriedigend?', a: ['Es gilt nur für Sand', 'Es berücksichtigt weder Wassertiefe noch Rauheit noch räumliche Effekte', 'Es ist zu kompliziert', 'Es verwendet die Schubspannung'], c: 1, e: 'Hjulström (1935) arbeitet über eine kritische Geschwindigkeit ohne Abhängigkeit von Wassertiefe, Rauheit oder räumlichen Effekten.', s: '4.1 · S. 8' },
+    { k: '4', q: 'Welcher Parameter der Schwebstoff-Transportgleichung ist der einzige änderbare?', a: ['die Sinkgeschwindigkeit', 'der Diffusionskoeffizient K_t', 'die Porosität', 'die Erdbeschleunigung'], c: 1, e: 'Die PDG selbst ist nicht empirisch. K_t wird an gemessenen Konzentrationsprofilen kalibriert; empirisch sind nur die Austauschterme mit der Sohle.', s: '4.1 · S. 20' },
+    { k: '4', q: 'Wozu dient die Exner-Gleichung?', a: ['zur Berechnung der Turbulenz', 'zur Berechnung der Sohlentwicklung aus Geschiebe- und Schwebstoffbilanz', 'zur Bestimmung des Strickler-Beiwerts', 'zur Wellenausbreitung'], c: 1, e: '(1 − n_p)∂z/∂t + ∂q_sx/∂x + ∂q_sy/∂y = s_dep − s_ero. Die Sortierung wird über die Austauschschicht abgebildet, deren Dicke ein Kalibrierparameter ist.', s: '4.1 · S. 22' },
+    { k: '4', q: 'Wie lang sollen Ein- und Auslaufstrecken als Faustregel sein?', a: ['1 × Flussbreite', '3–5 × Flussbreite', '10–20 × Wassertiefe', '100 m'], c: 1, e: '3–5 × Flussbreite, bei Bauwerken oder Rauheitssprüngen über eine Sensitivitätsanalyse prüfen. Die Ränder gehören nicht in starke Krümmungen, starke Gradienten oder nahe Zu- und Abflüsse.', s: '4.1 · S. 25' },
+    { k: '4', q: 'Buhnenstudie Witzelsdorf: Welcher Parameter ist am empfindlichsten?', a: ['Buhnenabstand', 'Buhnenlänge', 'Kronenhöhe', 'Ausrichtung'], c: 2, e: 'Die Kronenhöhe zeigt die stärkste Sensitivität. Über ihre Optimierung lässt sich ein morphodynamisches Gleichgewicht erreichen.', s: '4.2 · S. 22–23' },
+    { k: '4', q: 'Was passiert bei engerem Buhnenabstand oder längeren Buhnen?', a: ['Wasserspiegel sinkt, Fahrrinne landet an', 'Wasserspiegel steigt (gut für die Schifffahrt), aber die Fahrrinne erodiert', 'keine Änderung', 'nur die Ökologie verbessert sich'], c: 1, e: 'Der Wasserspiegel steigt und die Geschiebefracht nimmt zu, mit deutlicher Erosion in der Fahrrinne. Größerer Abstand oder kürzere Buhnen führen zu Anlandung und sind ökologisch besser.', s: '4.2 · S. 23' },
+    { k: '4', q: 'Wie wirken mehrere Strombojen zusammen?', a: ['wie eine Leitwand: Strömungskonzentration, Erosion und Anlandung weiter stromab', 'gar nicht', 'sie heben den Wasserspiegel stark', 'sie stoppen den Geschiebetransport'], c: 0, e: 'Einzeln haben sie wenig Einfluss. Zusammen wirken sie wie eine Leitwand.', s: '4.2 · S. 36' },
+    { k: 'U', q: 'Was bedeutet „Profile“ in HEC-RAS?', a: ['ein Querprofil', 'einen Abfluss (Abflussszenario)', 'ein Längsprofil', 'ein Rauheitsprofil'], c: 1, e: 'In HEC-RAS steht „Profile“ für den Abfluss, nicht für den Querschnitt.', s: 'PU 1 · S. 8' },
+    { k: 'U', q: 'Wie berücksichtigt HEC-RAS eine Flusskrümmung?', a: ['über die Linienform im Lageplan', 'über unterschiedliche Downstream Reach Lengths für LOB, Channel und ROB', 'gar nicht', 'über den Kontraktionsbeiwert'], c: 1, e: 'Die gezeichnete Linienform beeinflusst das Ergebnis nicht. Krümmungen gehen über die Reach Lengths ein.', s: 'PU 1 · S. 4' },
+    { k: 'U', q: 'Warum soll man das Flow Regime „Mixed“ wählen?', a: ['es rechnet schneller', 'nur damit lässt sich ein Wechselsprung (schießend → strömend) abbilden', 'es braucht keine Randbedingungen', 'es ist für instationäre Rechnungen vorgeschrieben'], c: 1, e: '„Subcritical“ und „Supercritical“ halten Fr < 1 bzw. Fr > 1 strikt ein und können den Wechselsprung nicht darstellen.', s: 'PU 2 · S. 2, 8' },
+    { k: 'U', q: 'PU 2: Was zeigt der Vergleich der Randbedingungen Normal Depth, Known W.S. und Critical Depth?', a: ['Alle drei liefern identische Wasserspiegel', 'Critical Depth verfälscht den Wasserspiegel am unteren Ende, daher braucht es eine Ein- und Auslaufstrecke', 'Known W.S. ist immer falsch', 'Normal Depth ist nur bei schießendem Abfluss erlaubt'], c: 1, e: 'Normal Depth und Known W.S. unterscheiden sich kaum. Critical Depth verändert den Wasserspiegel am unteren Rand deutlich.', s: 'PU 2 · S. 4' },
+    { k: 'U', q: 'Was passiert hydraulisch bei einer Flussaufweitung (PU 2)?', a: ['Wasserspiegel steigt, v steigt', 'Wasserspiegel sinkt, Energiegefälle wird flacher, v und τ sinken, Anlandung', 'nichts', 'Wechselsprung in der Aufweitung'], c: 1, e: 'Das ist gut für den Hochwasserschutz, aber durch die geringere Sohlschubspannung wird Sediment abgelagert.', s: 'PU 2 · S. 11–12' },
+    { k: 'U', q: 'Was ist eine Ineffective Flow Area?', a: ['ein Bereich, in dem kein Wasser gespeichert wird', 'ein Bereich, der sich mit Wasser füllt, in dem aber kein Fließen stattfindet', 'ein Damm, der erst überströmt werden muss', 'ein Bereich mit erhöhter Rauheit'], c: 1, e: 'Ineffective Flow Area: gefüllt, aber Totwasser. Obstruction: blockiert, kein Speicher. Levee: Vorland erst nach Überströmen aktiv.', s: 'PU 3 · S. 7' },
+    { k: 'U', q: 'Was wird bei der Querprofil-Interpolation in HEC-RAS NICHT mitinterpoliert?', a: ['Rauheiten', 'Levees', 'Ineffective Flow Areas', 'Geländepunkte'], c: 2, e: 'Rauheiten und Levees werden interpoliert (Levees können dann über dem Gelände liegen), Ineffective Flow Areas nicht.', s: 'PU 3 · S. 7' },
+    { k: 'U', q: 'Welche Kontraktions- und Expansionsbeiwerte wurden an der Brücke (PU 4) angesetzt?', a: ['0,1 und 0,3', '0,3 und 0,5', '0,5 und 1,0', '1,0 und 1,2'], c: 1, e: 'Kontraktion 0,3, Expansion 0,5, laut HEC-RAS-Manual.', s: 'PU 4 · S. 4' },
+    { k: 'U', q: 'Wie heißt die Zone unmittelbar stromab einer Brücke, und was zeigt die Energielinie dort?', a: ['Rückstauzone; Energielinie steigt', 'Rezirkulationszone; Energielinie fällt durch Dissipation ab', 'Grenzzone; Fr = 1', 'Totwasserzone; Energielinie konstant'], c: 1, e: 'Oberstrom liegt die Rückstauzone, unterstrom die Rezirkulationszone. Dort wird Energie dissipiert, die Energielinie fällt ab.', s: 'PU 4 · S. 4, 6' },
+    { k: 'U', q: 'Warum muss bei Hochwasser die Brückenmethode „Pressure and/or Weir“ gewählt werden?', a: ['damit Druckabfluss und Überströmen der Brücke berücksichtigt werden', 'damit die Rechnung schneller läuft', 'damit die Pfeiler ignoriert werden', 'damit der Abfluss schießend wird'], c: 0, e: 'Mit „Energy only“ wird Hochwasser unter der Brücke durchgezwängt. Mit „Pressure and/or Weir“ wird die Brücke korrekt überströmt.', s: 'PU 4 · S. 5–6' },
+    { k: 'U', q: 'RSim-3D-Übung (Mäander): Wie wird die Rauheit des Flussbetts angegeben?', a: ['k_St = 30 m^(1/3)/s', 'absolute Rauheit nach Nikuradse, 5 cm', 'Manning n = 0,035', 'gar nicht'], c: 1, e: 'Fluss 5 cm, Ufer und Vegetation 50 cm, Schwelle 20 cm, jeweils als absolute Rauheit (Nikuradse). Q = 85 m³/s, 6 Schichten, 3 m Punktabstand.', s: 'Practical Unit 3D' },
+    { k: 'U', q: 'PU 5 (instationär, Mur): Welche Randbedingung wird am oberen Rand gesetzt?', a: ['Normal Depth', 'Abflussganglinie Q(t) in 15-min-Werten', 'Known W.S.', 'Rating Curve'], c: 1, e: 'Oben die Ganglinie Q(t) vom Pegel Spielfeld, unten Normal Depth 0,001, Anfangsabfluss 400 m³/s.', s: 'PU 5 · S. 3–4' }
+  ];
+  const KAP = [['all', 'Alle'], ['1', '1.x Grundlagen/1D'], ['2', '2.x Numerik/Rauheit'], ['3', '3.x 2D/3D'], ['4', '4.x Sediment'], ['U', 'Übungen']];
+  const KEY = 'cbrm-quiz-v1';
+  let state = {}; try { state = JSON.parse(localStorage.getItem(KEY) || '{}') || {}; } catch (e) { state = {}; }
+  const save = () => { try { localStorage.setItem(KEY, JSON.stringify(state)); } catch (e) { } };
+  let filter = 'all', onlyOpen = false, order = Q.map((_, i) => i);
+
+  const fbar = $('#q-filter');
+  fbar.innerHTML = KAP.map(([k, l]) => `<button type="button" class="chip" data-k="${k}" aria-pressed="${k === 'all'}">${l}</button>`).join('');
+  fbar.addEventListener('click', e => { const b = e.target.closest('[data-k]'); if (!b) return; filter = b.dataset.k; $$('[data-k]', fbar).forEach(x => x.setAttribute('aria-pressed', x === b)); render(); });
+  $('#q-wrong').addEventListener('click', e => { onlyOpen = !onlyOpen; e.currentTarget.setAttribute('aria-pressed', onlyOpen); render(); });
+  $('#q-shuffle').addEventListener('click', () => { for (let i = order.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [order[i], order[j]] = [order[j], order[i]]; } render(); });
+  $('#q-reset').addEventListener('click', () => { state = {}; save(); render(); });
+
+  function render() {
+    const list = $('#q-list');
+    const ids = order.filter(i => (filter === 'all' || Q[i].k === filter) && (!onlyOpen || state[i] === undefined || state[i] !== Q[i].c));
+    list.innerHTML = ids.length ? ids.map((i, n) => {
+      const it = Q[i], ans = state[i], done = ans !== undefined, right = done && ans === it.c;
+      return `<article class="q ${done ? (right ? 'right' : 'wrong') : ''}" data-i="${i}">
+        <div class="q-top"><span class="q-q">${n + 1}. ${it.q}</span><span class="src">${it.s}</span></div>
+        <div class="opts">${it.a.map((o, j) => `<button type="button" class="opt ${done && j === it.c ? 'is-right' : ''} ${done && j === ans && j !== it.c ? 'is-wrong' : ''}" data-j="${j}" ${done ? 'disabled' : ''}>${o}</button>`).join('')}</div>
+        ${done ? `<div class="expl"><b>${right ? 'Richtig.' : 'Leider falsch.'}</b> ${it.e}</div>` : ''}
+      </article>`;
+    }).join('') : '<p class="empty">Alles erledigt. Mit „Zurücksetzen“ fängst du neu an.</p>';
+    const scope = Q.map((q, i) => i).filter(i => filter === 'all' || Q[i].k === filter);
+    const answered = scope.filter(i => state[i] !== undefined), correct = answered.filter(i => state[i] === Q[i].c);
+    $('#q-score').innerHTML = `<b>${correct.length}</b> richtig · ${answered.length} von ${scope.length} beantwortet`;
+    $('#q-meter').style.width = (scope.length ? correct.length / scope.length * 100 : 0) + '%';
+  }
+  $('#q-list').addEventListener('click', e => {
+    const b = e.target.closest('.opt'); if (!b || b.disabled) return;
+    const i = +b.closest('.q').dataset.i; state[i] = +b.dataset.j; save();
+    const y = window.scrollY; render(); window.scrollTo(0, y);
+  });
+  render();
+})();
+</script>
+
+</body>
+</html>
